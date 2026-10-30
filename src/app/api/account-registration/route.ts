@@ -20,6 +20,7 @@ export async function POST(request: NextRequest) {
     const { auth, db } = getFirebaseAdmin();
     const claims = await auth.verifyIdToken(input.data.idToken, true);
     if (!claims.email) return NextResponse.json({ error: "Email verification is required." }, { status: 400 });
+    if (!claims.email_verified) return NextResponse.json({ error: "Verify your email address before submitting registration." }, { status: 403 });
 
     const userRef = db.collection("users").doc(claims.uid);
     if (input.data.role === "patient") {

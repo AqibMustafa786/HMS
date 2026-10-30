@@ -30,10 +30,14 @@ export async function GET() {
   const { db } = getFirebaseAdmin();
   const applications = await db.collection("pendingDoctorApplications")
     .where("state", "==", "pending")
-    .orderBy("submittedAt", "desc")
     .get();
+  const sortedApplications = applications.docs.sort((left, right) => {
+    const leftTime = left.data().submittedAt?.toMillis?.() ?? 0;
+    const rightTime = right.data().submittedAt?.toMillis?.() ?? 0;
+    return rightTime - leftTime;
+  });
   return NextResponse.json({
-    applications: applications.docs.map((application) => ({
+    applications: sortedApplications.map((application) => ({
       uid: application.id,
       ...application.data(),
       submittedAt: application.data().submittedAt?.toDate?.().toISOString() ?? null,
