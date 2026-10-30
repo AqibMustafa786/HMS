@@ -3,10 +3,11 @@ import { getAuth } from "firebase-admin/auth";
 import { getFirestore } from "firebase-admin/firestore";
 import { readFileSync, existsSync } from "node:fs";
 
-if (!process.env.SUPERADMIN_PASSWORD && existsSync(".env.local")) {
+if (existsSync(".env.local")) {
   for (const line of readFileSync(".env.local", "utf8").split(/\r?\n/)) {
-    const match = line.match(/^SUPERADMIN_PASSWORD=(.*)$/);
-    if (match) process.env.SUPERADMIN_PASSWORD = match[1];
+    const match = line.match(/^([A-Z0-9_]+)=(.*)$/);
+    if (!match || process.env[match[1]] !== undefined) continue;
+    process.env[match[1]] = match[2];
   }
 }
 
@@ -33,6 +34,7 @@ try {
 
 await auth.setCustomUserClaims(user.uid, { superadmin: true, admin: true, role: "superadmin", hospitalId: projectId });
 const commonAssignment = {
+  uid: user.uid,
   tenantId: projectId,
   branchIds: ["main"],
   permissions: ["*"],
@@ -41,15 +43,6 @@ const commonAssignment = {
   updatedAt: new Date(),
 };
 await db.collection("users").doc(user.uid).set({ ...commonAssignment, role: "superadmin" }, { merge: true });
-await db.collection("superadmins").doc(user.uid).set({
-  uid: user.uid,
-  email,
-  tenantId: projectId,
-  status: "active",
-  createdAt: new Date(),
-  updatedAt: new Date(),
-}, { merge: true });
-await db.collection("admins").doc(user.uid).delete();
 
 
 console.log(`Administrator configured: ${email} (${user.uid})`);

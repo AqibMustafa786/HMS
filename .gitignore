@@ -8,6 +8,8 @@ coverage/
 # Local secrets and environment configuration
 .env*
 !.env.example
+*-firebase-adminsdk-*.json
+hms-service-account.json
 
 # Firebase local artifacts
 .firebase/
