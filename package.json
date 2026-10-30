@@ -12,12 +12,13 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:rules": "vitest run tests/security",
-    "provision:admin": "node scripts/provision-admin.mjs"
+    "provision:admin": "node scripts/provision-admin.mjs",
+    "firebase:init": "node scripts/initialize-firestore.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^6.0.2",
     "firebase": "^12.6.0",
-    "firebase-admin": "^13.6.0",
+    "firebase-admin": "^13.10.0",
     "lucide-react": "^0.468.0",
     "next": "^16.4.3",
     "react": "^19.2.0",
