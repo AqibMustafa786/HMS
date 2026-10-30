@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   Bell, CalendarDays, ChevronDown, CircleHelp, FileText, LayoutDashboard,
-  Menu, MessageCircle, Search, Settings, Stethoscope, Users, WifiOff, X,
+  Menu, MessageCircle, Search, Settings, Stethoscope, Users, X,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -56,7 +56,7 @@ export function AppShell({ children }: Readonly<{ children: React.ReactNode }>) 
           <button className="icon-btn menu-btn" onClick={() => setMobileOpen(true)} aria-label="Open menu"><Menu size={18} /></button>
           <div className="searchbox"><Search size={16} /><input aria-label="Search patients and doctors" placeholder="Search patients, doctors, visits..." /><kbd>⌘ K</kbd></div>
           <div className="top-actions">
-            <span className="sync-state"><span /><WifiOff size={13} /> Offline ready</span>
+            <span className="sync-state"><span />Offline ready</span>
             <button className="icon-btn notification-btn" aria-label="Notifications"><Bell size={17} /><i /></button>
             <span className="avatar avatar-doctor">AM<span className="status-dot" /></span>
           </div>
