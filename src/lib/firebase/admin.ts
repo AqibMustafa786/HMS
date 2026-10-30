@@ -7,9 +7,24 @@ function getAdminApp() {
   const projectId = process.env.FIREBASE_PROJECT_ID ?? process.env.GOOGLE_CLOUD_PROJECT;
   if (!projectId) throw new Error("FIREBASE_PROJECT_ID or GOOGLE_CLOUD_PROJECT must be configured on the server.");
   const serviceAccountJson = process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
-  const credential = serviceAccountJson
-    ? cert(JSON.parse(serviceAccountJson.replace(/\\n/g, "\n")))
-    : applicationDefault();
+  let credential;
+  if (serviceAccountJson) {
+    let serviceAccount;
+    try {
+      serviceAccount = JSON.parse(serviceAccountJson.replace(/\\n/g, "\n"));
+    } catch {
+      throw new Error("FIREBASE_SERVICE_ACCOUNT_JSON is invalid JSON.");
+    }
+    if (!serviceAccount.project_id || !serviceAccount.client_email || !serviceAccount.private_key) {
+      throw new Error("FIREBASE_SERVICE_ACCOUNT_JSON is missing project_id, client_email, or private_key.");
+    }
+    if (serviceAccount.project_id !== projectId) {
+      throw new Error("FIREBASE_SERVICE_ACCOUNT_JSON project_id does not match FIREBASE_PROJECT_ID.");
+    }
+    credential = cert(serviceAccount);
+  } else {
+    credential = applicationDefault();
+  }
 
   return getApps().length
     ? getApp()

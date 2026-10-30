@@ -13,6 +13,7 @@ if (existsSync(".env.local")) {
 }
 
 const email = process.env.ADMIN_EMAIL ?? "aqib2k1@gmail.com";
+const displayName = process.env.SUPERADMIN_DISPLAY_NAME ?? "Aqib Mustafa";
 const projectId = process.env.FIREBASE_PROJECT_ID ?? "hms-careflow";
 const password = process.env.SUPERADMIN_PASSWORD;
 
@@ -26,11 +27,11 @@ const db = getFirestore();
 let user;
 try {
   user = await auth.getUserByEmail(email);
-  if (password) await auth.updateUser(user.uid, { password, emailVerified: true });
+  if (password) await auth.updateUser(user.uid, { password, emailVerified: true, displayName });
 } catch (error) {
   if (error?.code !== "auth/user-not-found") throw error;
   if (!password) throw new Error("Set SUPERADMIN_PASSWORD to create the initial superadmin account.");
-  user = await auth.createUser({ email, password, emailVerified: true });
+  user = await auth.createUser({ email, password, emailVerified: true, displayName });
 }
 
 await auth.setCustomUserClaims(user.uid, { superadmin: true, admin: true, role: "superadmin", hospitalId: projectId });
@@ -41,6 +42,7 @@ const commonAssignment = {
   permissions: ["*"],
   status: "active",
   email,
+  displayName,
   updatedAt: new Date(),
 };
 await db.collection("users").doc(user.uid).set({ ...commonAssignment, role: "superadmin" }, { merge: true });

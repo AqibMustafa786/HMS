@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { onAuthStateChanged, reload, createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword } from "firebase/auth";
 import { getFirebaseClient } from "@/lib/firebase/client";
 
@@ -12,7 +12,7 @@ export function LoginForm() {
   const [mode, setMode] = useState<"signin" | "create" | "verify">("signin");
   const [notice, setNotice] = useState("");
 
-  async function createSession() {
+  const createSession = useCallback(async () => {
     const { auth } = getFirebaseClient();
     await reload(auth.currentUser!);
     if (!auth.currentUser?.emailVerified) return false;
@@ -28,7 +28,53 @@ export function LoginForm() {
       throw new Error(body?.error ?? "Unable to create a secure hospital session.");
     }
     return true;
+  }, []);
+
+  async function resendVerification() {
+    const { auth } = getFirebaseClient();
+    if (!auth.currentUser) {
+      setError("Sign in first, then resend verification.");
+      setMode("signin");
+      return;
+    }
+    setPending(true);
+    try {
+      await reload(auth.currentUser);
+      if (auth.currentUser.emailVerified) {
+        await createSession();
+        router.replace("/dashboard");
+        router.refresh();
+        return;
+      }
+      await sendEmailVerification(auth.currentUser);
+      setNotice("A fresh verification email was sent. Verify it, then return here.");
+      setError("");
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "Unable to resend verification email.");
+    } finally {
+      setPending(false);
+    }
   }
+
+  const checkVerification = useCallback(async () => {
+    const { auth } = getFirebaseClient();
+    if (!auth.currentUser) return;
+    setPending(true);
+    try {
+      await reload(auth.currentUser);
+      if (!auth.currentUser.emailVerified) {
+        setNotice("Email is not verified yet. Open the newest verification link and try again.");
+        return;
+      }
+      await createSession();
+      router.replace("/dashboard");
+      router.refresh();
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "Unable to complete verification.");
+    } finally {
+      setPending(false);
+    }
+  }, [createSession, router]);
 
   useEffect(() => {
     const { auth } = getFirebaseClient();
@@ -50,7 +96,13 @@ export function LoginForm() {
         setError(reason instanceof Error ? reason.message : "Unable to complete sign-in.");
       }
     });
-  }, [router]);
+  }, [createSession, router]);
+
+  useEffect(() => {
+    if (mode !== "verify") return;
+    const interval = window.setInterval(checkVerification, 5000);
+    return () => window.clearInterval(interval);
+  }, [checkVerification, mode]);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -103,6 +155,9 @@ export function LoginForm() {
       {mode === "verify" ? (
         <div className="auth-form">
           <p className="auth-demo-note" role="status">{notice}</p>
+          {error && <p className="auth-demo-note" role="alert">{error}</p>}
+          <button className="btn btn-primary auth-submit" type="button" disabled={pending} onClick={checkVerification}>{pending ? "Checking..." : "I've verified my email"}</button>
+          <button className="link-btn" type="button" disabled={pending} onClick={resendVerification}>Resend verification email</button>
           <button className="btn btn-primary auth-submit" type="button" onClick={() => { setMode("signin"); setNotice(""); }}>Return to sign in</button>
         </div>
       ) : (

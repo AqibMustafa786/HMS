@@ -19,23 +19,35 @@ export async function POST(request: NextRequest) {
     const { db } = getFirebaseAdmin();
     const superadminEmail = (process.env.SUPERADMIN_EMAIL ?? "aqib2k1@gmail.com").toLowerCase();
     if (String(claims.email ?? "").toLowerCase() === superadminEmail) {
+      const account = await auth.getUser(claims.uid);
       const assignment = {
         tenantId: process.env.FIREBASE_PROJECT_ID ?? "hms-careflow",
         branchIds: ["main"],
         permissions: ["*"],
         status: "active",
         email: superadminEmail,
+        displayName: account.displayName || "Aqib Mustafa",
         role: "superadmin",
         updatedAt: new Date(),
       };
       await db.collection("users").doc(claims.uid).set(assignment, { merge: true });
-      await db.collection("superadmins").doc(claims.uid).set({
-        uid: claims.uid,
-        email: superadminEmail,
-        tenantId: assignment.tenantId,
-        status: "active",
-        updatedAt: new Date(),
-      }, { merge: true });
+    } else {
+      const userRef = db.collection("users").doc(claims.uid);
+      const user = await userRef.get();
+      if (!user.exists) {
+        await userRef.set({
+          uid: claims.uid,
+          email: String(claims.email ?? "").toLowerCase(),
+          tenantId: process.env.FIREBASE_PROJECT_ID ?? "hms-careflow",
+          branchIds: ["main"],
+          permissions: [],
+          role: "patient",
+          status: "active",
+          emailVerified: true,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        });
+      }
     }
     const cookie = await auth.createSessionCookie(parsed.data.idToken, { expiresIn: 12 * 60 * 60 * 1000 });
     const principal = await resolveTrustedPrincipal(cookie);
@@ -47,8 +59,14 @@ export async function POST(request: NextRequest) {
       maxAge: 12 * 60 * 60, path: "/",
     });
     return response;
-  } catch {
-    return NextResponse.json({ error: "Unable to sign in. Check your account and try again." }, { status: 401 });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "";
+    if (/FIREBASE_SERVICE_ACCOUNT_JSON|project_id|credentials/i.test(message)) {
+      console.error("Server authentication configuration error:", message);
+      return NextResponse.json({ error: "Server authentication is not configured correctly.", code: "SERVER_AUTH_CONFIG" }, { status: 503 });
+    }
+    console.error("Session creation failed:", error);
+    return NextResponse.json({ error: "Unable to create the secure session. Check the account and try again.", code: "SESSION_CREATE_FAILED" }, { status: 401 });
   }
 }
 

@@ -6,7 +6,7 @@ import {
   Bell, CalendarDays, ChevronDown, CircleHelp, FileText, LayoutDashboard,
   Menu, MessageCircle, Search, Settings, Stethoscope, Users, X,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const nav = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
@@ -20,6 +20,17 @@ const nav = [
 export function AppShell({ children }: Readonly<{ children: React.ReactNode }>) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [profileName, setProfileName] = useState("HMS account");
+  const [profileRole, setProfileRole] = useState("Signed in");
+  useEffect(() => {
+    fetch("/api/profile").then(async (response) => {
+      if (!response.ok) return;
+      const data = await response.json();
+      setProfileName(data.profile.displayName || data.profile.email || "HMS account");
+      setProfileRole(data.profile.role === "superadmin" ? "Super administrator" : data.profile.role || "Signed in");
+    }).catch(() => undefined);
+  }, []);
+  const initials = profileName.split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]?.toUpperCase()).join("") || "SA";
   const active = (href: string) => pathname === href || (href !== "/dashboard" && pathname.startsWith(href));
 
   return (
@@ -44,8 +55,8 @@ export function AppShell({ children }: Readonly<{ children: React.ReactNode }>) 
           <Link href="/dashboard/help" className="nav-item"><CircleHelp size={17} /><span>Help center</span></Link>
           <Link href="/dashboard/settings" className={`nav-item ${active("/dashboard/settings") ? "active" : ""}`}><Settings size={17} /><span>Settings</span></Link>
           <button className="profile-switcher">
-            <span className="avatar avatar-doctor">AM<span className="status-dot" /></span>
-            <span><strong>HMS account</strong><small>Signed in</small></span>
+            <span className="avatar avatar-doctor">{initials}<span className="status-dot" /></span>
+            <span><strong>{profileName}</strong><small>{profileRole}</small></span>
             <ChevronDown size={15} />
           </button>
         </div>
@@ -58,7 +69,7 @@ export function AppShell({ children }: Readonly<{ children: React.ReactNode }>) 
           <div className="top-actions">
             <span className="sync-state"><span />Offline ready</span>
             <button className="icon-btn notification-btn" aria-label="Notifications"><Bell size={17} /><i /></button>
-            <span className="avatar avatar-doctor">AM<span className="status-dot" /></span>
+            <span className="avatar avatar-doctor">{initials}<span className="status-dot" /></span>
           </div>
         </header>
         <div className="page-content">{children}</div>
