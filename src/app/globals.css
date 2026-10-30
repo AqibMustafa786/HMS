@@ -267,16 +267,20 @@ body {
 .auth-footer { margin-top:22px; padding-top:14px; border-top:1px solid var(--line); color:#a0a6a4; text-align:center; font-size:8px; text-transform:uppercase; letter-spacing:.06em; }
 .route-state { min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:7px; color:#74807d; text-align:center; }.route-state h1 { margin:0; color:var(--ink); font-size:20px; }.route-state p { margin:0 0 9px; font-size:11px; }.route-spinner { width:18px; height:18px; border:2px solid #dfe6e4; border-top-color:var(--teal); border-radius:50%; animation:spin .7s linear infinite; }@keyframes spin { to { transform:rotate(360deg) } }
 
-.registry-backdrop { position:fixed; inset:0; z-index:50; display:grid; place-items:center; padding:20px; background:rgb(15 23 42 / 35%); backdrop-filter:blur(4px); }
-.registry-dialog { width:min(560px, 100%); max-height:calc(100vh - 40px); overflow:auto; }
-.registry-tabs { display:flex; gap:4px; margin-bottom:14px; padding:3px; border-radius:8px; background:#f1f5f9; }
+.registry-backdrop { position:fixed; inset:0; z-index:50; display:grid; place-items:center; padding:24px; background:rgb(15 23 42 / 35%); backdrop-filter:blur(4px); }
+.registry-dialog { width:min(620px, 100%); max-height:calc(100vh - 48px); overflow:auto; border-radius:10px; }
+.registry-dialog > .panel-head { min-height:68px; padding:16px 20px; border-bottom:1px solid var(--line); }
+.registry-tabs { display:flex; gap:4px; margin:16px 20px 0; padding:3px; border-radius:8px; background:#f1f5f9; }
 .registry-tabs button { flex:1; border:0; border-radius:6px; padding:7px 10px; background:transparent; color:inherit; cursor:pointer; }
 .registry-tabs button.active { background:#fff; box-shadow:0 1px 3px rgb(15 23 42 / 12%); }
-.registry-form, .registry-fields { display:grid; gap:10px; }
-.registry-fields { grid-template-columns:repeat(2, minmax(0, 1fr)); }
+.registry-form { padding:18px 20px 20px; }
+.registry-form, .registry-fields { display:grid; gap:14px; }
+.registry-fields { grid-template-columns:repeat(2, minmax(0, 1fr)); column-gap:16px; row-gap:16px; }
+.registry-form > label { margin-top:2px; }
+.registry-form > .btn { margin-top:4px; }
 .registry-form label { display:grid; gap:5px; font-size:12px; font-weight:600; }
 .registry-form input, .registry-form select { min-height:34px; width:100%; border:1px solid var(--line); border-radius:7px; padding:6px 9px; background:white; font-size:12px; }
-.registry-message, .registry-result { margin-top:12px; font-size:12px; }
+.registry-message, .registry-result { margin:0 20px 20px; font-size:12px; }
 .registry-result { display:grid; gap:3px; border-top:1px solid var(--line); padding-top:12px; }
 .registry-result a { color:var(--teal); }
 @media (max-width:600px) { .registry-fields { grid-template-columns:1fr; } }

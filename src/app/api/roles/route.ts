@@ -36,12 +36,20 @@ export async function GET() {
     const rightTime = right.data().submittedAt?.toMillis?.() ?? 0;
     return rightTime - leftTime;
   });
+  const doctors = await db.collection("users").where("role", "==", "doctor").get();
   return NextResponse.json({
     applications: sortedApplications.map((application) => ({
       uid: application.id,
       ...application.data(),
       submittedAt: application.data().submittedAt?.toDate?.().toISOString() ?? null,
       updatedAt: application.data().updatedAt?.toDate?.().toISOString() ?? null,
+    })),
+    doctors: doctors.docs.map((doctor) => ({
+      uid: doctor.id,
+      ...doctor.data(),
+      createdAt: doctor.data().createdAt?.toDate?.().toISOString() ?? null,
+      approvedAt: doctor.data().approvedAt?.toDate?.().toISOString() ?? null,
+      updatedAt: doctor.data().updatedAt?.toDate?.().toISOString() ?? null,
     })),
   });
 }

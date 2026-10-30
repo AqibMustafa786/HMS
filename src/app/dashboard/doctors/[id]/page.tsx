@@ -1,16 +1,39 @@
-import { CalendarDays, Clock3, Download, FileText, Star } from "lucide-react";
-import { doctors } from "@/components/data";
+import { CalendarDays, ShieldCheck } from "lucide-react";
+import { getFirebaseAdmin } from "@/lib/firebase/admin";
 
 export default async function DoctorProfile({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const doctor = doctors.find((item) => String(item.id) === id);
+  const { db } = getFirebaseAdmin();
+  const snapshot = await db.collection("users").doc(id).get();
+  const doctor = snapshot.exists && snapshot.data()?.role === "doctor" ? snapshot.data()! : null;
   if (!doctor) {
     return <section className="panel empty-state"><h1>Doctor not found</h1><p>This profile does not exist or has not been published.</p></section>;
   }
   return (
     <>
-      <div className="page-heading"><div><p className="eyebrow">Doctor profile</p><h1>{doctor.name}</h1><p className="subtle">{doctor.specialty}</p></div><a href="/dashboard/appointments" className="btn btn-primary"><CalendarDays size={15} /> Book appointment</a></div>
-      <div className="profile-grid"><main className="profile-main"><section className="panel doctor-intro"><span className={`avatar doctor-avatar ${doctor.color}`}>{doctor.initials}<i className="status-dot" /></span><div><span className="availability">Available today</span><h2>{doctor.specialty}</h2><p><Star size={14} /> {doctor.rating} · 286 patient reviews</p><p className="doctor-bio">Dedicated cardiology consultant with 14 years of clinical experience in preventive care, ECG diagnostics, and complex cardiac follow-ups.</p></div></section><section className="panel detail-section"><div className="panel-head"><div><h2>Schedule</h2><p>October 2026</p></div><button className="link-btn">Edit schedule</button></div><div className="schedule-grid">{["Mon 09:00 - 15:00","Tue 09:00 - 15:00","Wed 09:00 - 15:00","Thu 10:00 - 16:00","Fri 09:00 - 15:00","Sat Closed"].map((item) => <div key={item}><Clock3 size={15} /><strong>{item}</strong></div>)}</div></section><section className="panel detail-section"><div className="panel-head"><div><h2>Certificates & documents</h2><p>Public credentials</p></div><button className="link-btn">Manage files</button></div>{["Cardiology Board Certification.pdf","Medical Degree.pdf","Clinical Experience Certificate.pdf"].map((file) => <div className="document-row" key={file}><span className="file-icon"><FileText size={17} /></span><span><strong>{file}</strong><small>Verified document</small></span><button aria-label={`Download ${file}`}><Download size={15} /></button></div>)}</section></main><aside className="profile-side"><section className="panel side-card"><h2>Consultation</h2><div className="fee-line"><strong>PKR {doctor.fee}</strong><span>per visit</span></div><p>{doctor.seats} seats available today</p><button className="btn btn-secondary full-btn">See available times</button></section><section className="panel side-card"><h2>Clinical focus</h2><div className="tag-list"><span>Preventive cardiology</span><span>ECG diagnostics</span><span>Hypertension</span><span>Heart failure</span></div></section></aside></div>
+      <div className="page-heading"><div><p className="eyebrow">Doctor profile</p><h1>{doctor.displayName || "Doctor account"}</h1><p className="subtle">{doctor.title || "Medical practitioner"}</p></div><a href="/dashboard/appointments" className="btn btn-primary"><CalendarDays size={15} /> Book appointment</a></div>
+      <div className="profile-grid">
+        <main className="profile-main">
+          <section className="panel doctor-intro">
+            <span className="avatar doctor-avatar">{String(doctor.displayName || "DR").split(/\s+/).slice(0, 2).map((part) => part[0]?.toUpperCase()).join("")}<i className="status-dot" /></span>
+            <div><span className="availability">Active account</span><h2>{doctor.title || "Medical practitioner"}</h2><p>{doctor.email}</p></div>
+          </section>
+          <section className="panel detail-section">
+            <div className="panel-head"><div><h2>Professional credentials</h2><p>Registration information supplied by the doctor</p></div></div>
+            <div className="profile-facts">
+              <span><small>Registration number</small><strong>{doctor.registrationNumber || "Not provided"}</strong></span>
+              <span><small>Department</small><strong>{doctor.departmentId || "Not set"}</strong></span>
+              <span><small>Account status</small><strong>{doctor.status || "Active"}</strong></span>
+            </div>
+          </section>
+        </main>
+        <aside className="profile-side">
+          <section className="panel side-card">
+            <h2>Account verification</h2>
+            <p className="verified-note"><ShieldCheck size={16} /> Approved medical staff account</p>
+          </section>
+        </aside>
+      </div>
     </>
   );
 }
