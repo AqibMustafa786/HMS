@@ -13,7 +13,7 @@ const nav = [
   { href: "/dashboard/appointments", label: "Appointments", icon: CalendarDays },
   { href: "/dashboard/patients", label: "Patients", icon: Users },
   { href: "/dashboard/doctors", label: "Doctors", icon: Stethoscope },
-  { href: "/dashboard/messages", label: "Messages", icon: MessageCircle, badge: "3" },
+  { href: "/dashboard/messages", label: "Messages", icon: MessageCircle },
   { href: "/dashboard/documents", label: "Documents", icon: FileText },
 ];
 
@@ -34,9 +34,9 @@ export function AppShell({ children }: Readonly<{ children: React.ReactNode }>) 
         </div>
         <div className="nav-label">Workspace</div>
         <nav className="main-nav" aria-label="Main navigation">
-          {nav.map(({ href, label, icon: Icon, badge }) => (
+          {nav.map(({ href, label, icon: Icon }) => (
             <Link key={href} href={href} onClick={() => setMobileOpen(false)} className={`nav-item ${active(href) ? "active" : ""}`}>
-              <Icon size={17} strokeWidth={1.8} /><span>{label}</span>{badge && <b>{badge}</b>}
+              <Icon size={17} strokeWidth={1.8} /><span>{label}</span>
             </Link>
           ))}
         </nav>
@@ -56,7 +56,7 @@ export function AppShell({ children }: Readonly<{ children: React.ReactNode }>) 
           <button className="icon-btn menu-btn" onClick={() => setMobileOpen(true)} aria-label="Open menu"><Menu size={18} /></button>
           <div className="searchbox"><Search size={16} /><input aria-label="Search patients and doctors" placeholder="Search patients, doctors, visits..." /><kbd>⌘ K</kbd></div>
           <div className="top-actions">
-            <span className="sync-state"><span /><WifiOff size={13} /> Local demo</span>
+            <span className="sync-state"><span /><WifiOff size={13} /> Offline ready</span>
             <button className="icon-btn notification-btn" aria-label="Notifications"><Bell size={17} /><i /></button>
             <span className="avatar avatar-doctor">AM<span className="status-dot" /></span>
           </div>
