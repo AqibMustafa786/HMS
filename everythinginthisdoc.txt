@@ -1,0 +1,2163 @@
+Hospital Management System (HMS) — Complete Industry-Level Web App Blueprint
+For your Hospital Management System, I recommend building a full-stack, multi-role, secure hospital operations platform using Next.js, TypeScript, and Firebase. The system should cover the complete patient journey: registration, appointments, OPD, emergency, admissions, doctors, nursing, laboratory, radiology, pharmacy, operation theatres, billing, insurance, inventory, HR, reporting, and administration.
+
+The goal should not be just a dashboard with CRUD pages. It should be a production-oriented application with connected workflows, strict access controls, audit trails, validated data, and reliable financial and clinical records.
+1. Recommended technology stack
+
+
+
+
+
+
+
+
+
+Frontend and application framework
+
+Next.js + React + TypeScript
+
+Use Next.js App Router, React Server Components where appropriate, Server Actions or Route Handlers for server-side operations, and TypeScript strict mode.
+
+
+
+
+
+
+
+
+
+
+
+
+UI and design system
+
+Tailwind CSS + shadcn/ui
+
+Responsive layouts, accessible forms, reusable tables, dialogs, clinical input components, charts, and consistent dashboard navigation.
+
+
+
+
+
+
+
+
+
+
+
+
+Backend and cloud infrastructure
+
+Firebase Authentication + Firestore + Cloud Storage + Cloud Functions
+
+Identity, database, protected file storage, server-side business logic, event processing, and automated workflows.
+
+
+
+
+
+
+
+
+
+
+
+
+Production services
+
+Firebase App Check, Google Cloud Secret Manager, Cloud Logging, monitoring and backups
+
+Request abuse protection, secrets management, observability, disaster recovery, and security operations.
+
+
+
+Which programming languages will be used?
+Technology	Language	Purpose
+Next.js + React	TypeScript	Frontend and application framework
+Tailwind CSS	CSS utilities	Styling and responsive design
+Firebase Cloud Functions	TypeScript	Trusted backend business logic
+Firestore	Firebase Security Rules syntax	Database access control
+Firestore queries	TypeScript	Data retrieval and filtering
+Firebase configuration	JSON, TypeScript	Environment and service setup
+Testing	TypeScript	Unit, integration, and end-to-end tests
+
+Use TypeScript throughout the application, rather than mixing JavaScript, Python, PHP, and other backend languages. You can build and manage the project directly in VS Code. Firebase is your backend platform, while Cloud Functions provides trusted server-side execution.
+
+One important architectural distinction: Firebase is excellent for identity, real-time operational data, and cloud-hosted applications, but a hospital-grade system needs careful data modelling, transactional workflows, backup planning, and regulatory review. For complex clinical reporting and interoperability, you may eventually need Google Cloud services or a relational database alongside Firebase.
+2. Complete HMS feature catalogue
+A comprehensive hospital system should use modules that share the same patient, encounter, staff, billing, and inventory records rather than operate as separate disconnected apps.
+
+
+
+
+
+
+
+
+
+01. Hospital administration and master settings
+- Hospital profile, branches, departments, units, wards, rooms and beds.
+- Service catalog, consultation fees, procedure prices, taxes, discounts and billing rules.
+- Working hours, holidays, shifts, appointment policies and numbering sequences.
+- Multi-branch configuration, organization-level settings and per-branch permissions.
+- Configurable document templates, logos, currencies and language settings.
+
+
+
+
+
+
+
+
+
+
+
+
+02. Patient registration and electronic health records (EHR)
+- Unique medical record number (MRN), demographics, contact details and emergency contacts.
+- Duplicate patient detection, patient search, registration history and merge workflow with authorization.
+- Allergies, medical and surgical history, family history, medications, diagnoses and vital signs.
+- Previous visits, prescriptions, lab results, radiology reports, procedures and discharge summaries.
+- Consent records, clinical documents, patient alerts, patient portal and authorized guardian access.
+- Complete encounter history and printable patient summaries.
+
+
+
+
+
+
+
+
+
+
+
+
+03. Appointments and OPD
+- Doctor availability, specialty selection, clinic schedules and appointment slots.
+- Walk-in registration, booking, rescheduling, cancellations and waiting lists.
+- Check-in, token numbers, queue management, no-show tracking and estimated waiting times.
+- Recurring appointments, follow-ups, referrals and appointment reminders.
+- OPD consultation notes, vitals, diagnoses, orders, prescriptions and visit billing.
+- Daily doctor schedules and patient throughput reports.
+
+
+
+
+
+
+
+
+
+
+
+
+04. Emergency department (ER)
+- Rapid registration, unidentified-patient workflow and emergency contact recording.
+- Triage category, presenting complaint, arrival mode and initial observations.
+- Emergency assessment, treatment timeline, orders and authorized clinical documentation.
+- Critical alerts, escalation, referrals, transfers and admission decisions.
+- Emergency bed allocation, disposition tracking and emergency billing.
+- Time-stamped actions and handover documentation.
+
+
+
+
+
+
+
+
+
+
+
+
+05. Inpatient management (IPD), wards and beds
+- Admission requests, admission orders and patient classification.
+- Ward, room and bed availability; reservation, allocation and transfers.
+- Admission, discharge and transfer (ADT) workflows.
+- Attending physician, care team, daily progress notes and nursing notes.
+- Length of stay, occupancy, bed cleaning and maintenance status.
+- Discharge planning, medication reconciliation and final bill settlement.
+- Isolation flags, fall-risk alerts and authorized handover records.
+
+
+
+
+
+
+
+
+
+
+
+
+06. Doctor and clinical management
+- Doctor profiles, specialties, qualifications, license information and availability.
+- Consultation templates, SOAP notes, differential diagnoses and clinical assessments.
+- Diagnosis coding, care plans, treatment plans and referrals.
+- Medication orders, investigation requests and procedure orders.
+- Clinical alerts, allergy checks, abnormal-result notifications and follow-up plans.
+- Signed notes, amendments, addenda and physician performance reporting.
+
+
+
+
+
+
+
+
+
+
+
+
+07. Nursing and bedside care
+- Nursing assessments, vital signs and observation charts.
+- Nursing care plans, intake/output records and pain assessments.
+- Medication administration records (MAR), administration times and omitted-dose reasons.
+- Shift handovers, nursing task lists, wound care and patient monitoring.
+- Patient safety checklists, escalation documentation and care completion records.
+- Bedside procedure and device-monitoring documentation.
+
+
+
+
+
+
+
+
+
+
+
+
+08. Laboratory information system (LIS)
+- Lab test catalog, panels, pricing, reference ranges and specimen requirements.
+- Clinician orders, collection labels, barcode tracking and specimen accessioning.
+- Specimen collection, receipt, rejection, processing and status tracking.
+- Technician worklists, result entry, units, reference intervals and validation.
+- Authorized verification, critical-result escalation and corrected-result history.
+- Lab reports, turnaround-time metrics, analyzer integrations and quality-control logs.
+
+
+
+
+
+
+
+
+
+
+
+
+09. Radiology and imaging
+- X-ray, ultrasound, CT, MRI and other imaging orders.
+- Scheduling, patient preparation, modality worklists and study status.
+- Radiologist assignment, reporting, findings and authorized report finalization.
+- Image links, DICOM/PACS integration and image retrieval.
+- Urgent findings notifications and report amendments.
+- Imaging utilization and turnaround-time analytics.
+
+
+
+
+
+
+
+
+
+
+
+
+10. Pharmacy and medication management
+- Drug catalog, generic and brand names, dosage forms, strengths and units.
+- Prescriptions, dispensing, substitutions subject to policy, and medication reconciliation.
+- Batch numbers, expiry dates, stock levels, reorder points and stock reservations.
+- FEFO (first-expiry-first-out) dispensing, returns, damaged stock and recalls.
+- Controlled-medicine registers and restricted dispensing workflows where applicable.
+- Drug interaction and allergy checks using validated clinical data sources.
+- Pharmacy sales, inpatient medication issues and medication-use reports.
+
+
+
+
+
+
+
+
+
+
+
+
+11. Billing, payments and accounts
+- OPD/IPD billing, consultation fees, procedures, tests, medications and room charges.
+- Itemized invoices, deposits, advance payments, refunds and credit notes.
+- Cash, card, bank transfer and supported payment gateway recording.
+- Discounts with approval thresholds, concessions, taxes and financial adjustments.
+- Outstanding balances, patient statements, receipts and payment allocation.
+- Shift-wise cash reconciliation, cashier closing and daily revenue summaries.
+- General-ledger exports and accounting-system integration.
+
+
+
+
+
+
+
+
+
+
+
+
+12. Insurance and corporate panels
+- Payer and corporate-company records, policies, coverage limits and patient eligibility.
+- Preauthorization requests, approvals, exclusions and authorization references.
+- Claim preparation, supporting documentation, submission status and claim tracking.
+- Denials, resubmissions, deductions, co-payments and insurer receivables.
+- Corporate credit limits, agreements, tariffs and reconciliation.
+- Claim aging and payer-specific revenue reports.
+
+
+
+
+
+
+
+
+
+
+
+
+13. Operation theatre (OT) and surgical management
+- Surgery scheduling, surgeon and anesthetist assignments, theatre availability.
+- Pre-operative checklists, consent verification and anesthesia assessments.
+- Procedure notes, operative records, instrument and equipment checklists.
+- Surgical safety checklists, time-out documentation and recovery monitoring.
+- Theatre utilization, cancellations and post-operative instructions.
+- Integration with inpatient records, pharmacy, billing and supplies.
+
+
+
+
+
+
+
+
+
+
+
+
+14. Blood bank and transfusion services
+- Donor registration, screening, donation and eligibility records.
+- Blood grouping, component preparation and unit identification.
+- Component inventory, expiry, storage and traceability.
+- Crossmatch requests, compatibility verification and issue/return records.
+- Transfusion monitoring and reaction reporting.
+- Recall, quarantine and full donation-to-recipient traceability.
+
+
+
+
+
+
+
+
+
+
+
+
+15. Inventory, procurement and suppliers
+- Medical consumables, equipment, medicines and general supplies.
+- Multi-store stock, warehouse transfers, stock counts and adjustments.
+- Purchase requests, quotations, purchase orders and approval workflows.
+- Goods receipt, supplier invoices, returns and supplier performance.
+- Minimum stock alerts, batch/expiry tracking and consumption reports.
+- Asset register, equipment servicing and maintenance schedules.
+
+
+
+
+
+
+
+
+
+
+
+
+16. HR, staff and payroll
+- Employee profiles, departments, roles, qualifications and credentials.
+- Duty rosters, shift planning, attendance, leave and overtime.
+- Staff onboarding, training records, license renewals and expiry alerts.
+- Payroll calculations, allowances, deductions and payslips.
+- Performance reviews, disciplinary records and authorized document access.
+- Role-linked staff directories and staffing reports.
+
+
+
+
+
+
+
+
+
+
+
+
+17. Management reports and analytics
+- Patient registrations, visits, admissions, discharges and referrals.
+- Appointment volumes, waiting times and doctor utilization.
+- Bed occupancy, average length of stay and discharge delays.
+- Revenue by department, payer, service and time period.
+- Outstanding bills, claim aging, stock value and medicine expiry.
+- Lab turnaround times, critical results and service quality indicators.
+- Exportable reports with access restrictions and auditability.
+
+
+
+
+
+
+
+
+
+
+
+
+18. Patient portal and communications
+- Patient registration and secure sign-in.
+- Appointment requests, visit history and approved report access.
+- Prescriptions, invoices, receipts and payment status.
+- Follow-up reminders, notifications and appointment confirmations.
+- Secure messaging or contact requests with controlled access.
+- Consent management, guardian access and patient profile updates.
+
+
+
+Additional enterprise modules
+These should also be included in the complete product roadmap:
+- 19. Ambulance and transport: dispatch, vehicle and crew records, trip logs, emergency transfers.
+- 20. Dietary and kitchen services: diet orders, allergies, meal plans, delivery tracking and food inventory.
+- 21. CSSD and sterilization: instrument sets, sterilization cycles, load records, release checks and traceability.
+- 22. Physiotherapy and rehabilitation: therapy assessments, treatment plans, session scheduling and progress notes.
+- 23. Dialysis: session scheduling, treatment records, machine assignments, monitoring and consumables.
+- 24. Oncology and infusion: treatment protocols, cycles, infusion documentation and authorized safety checks.
+- 25. Maternity and newborn care: antenatal records, labor and delivery, newborn records and maternal follow-up.
+- 26. ICU and critical care: high-frequency observations, device records, care plans, escalation and handover.
+- 27. Infection prevention: isolation precautions, infection surveillance, incident records and reporting.
+- 28. Quality and patient safety: incident reporting, complaints, risk registers, corrective actions and audit preparation.
+- 29. Medical records and document management: document classification, versioning, scanning, retention policies and release-of-information workflows.
+- 30. Facilities and maintenance: maintenance tickets, biomedical equipment, inspections, work orders and downtime.
+- 31. Help desk and internal tasks: service requests, department tasks, priorities, assignment and resolution tracking.
+- 32. Telemedicine: virtual appointments, consent, session links, consultation documentation and follow-up.
+- 33. Research and clinical trials: study enrollment, consent, protocol tracking and tightly restricted research datasets.
+- 34. Public health and preventive care: vaccination records, screening, recall campaigns and applicable reporting.
+- 35. Interoperability and integrations: FHIR APIs, HL7 interfaces, DICOM/PACS, laboratory analyzers, payment services and external accounting systems.
+- 36. Multi-hospital SaaS administration: tenant provisioning, branch isolation, subscription plans, quotas, feature entitlements and platform support.
+- 37. Workflow and notification engine: configurable approvals, task queues, reminders, escalations and scheduled jobs.
+- 38. Disaster recovery and continuity: backups, restoration drills, incident response, downtime procedures and business continuity documentation.
+Not every hospital needs every specialist module enabled immediately. Build the system modularly so a small clinic can use core functionality and a larger hospital can enable more services without changing the foundational architecture.
+3. User roles and access control
+The system should not have only an Admin and User role. Create granular roles and permissions.
+Role	Typical access
+Platform Super Admin	Tenant provisioning and platform configuration, not automatic unrestricted clinical access
+Hospital Administrator	Hospital operations and authorized administration
+Medical Director	Clinical governance and authorized clinical reporting
+Receptionist / Front Desk	Registration, appointments, check-in and permitted billing tasks
+Doctor	Assigned patients, clinical records, orders, prescriptions and signed notes
+Nurse	Assigned patients, observations, medication administration and nursing records
+Emergency Staff	Emergency encounters, triage and authorized treatment records
+Lab Technician	Lab worklists, specimen handling and result entry
+Lab Supervisor / Pathologist	Result verification, release and lab quality management
+Radiologist	Imaging worklists, reports and report authorization
+Pharmacist	Prescriptions, dispensing, medication stock and permitted pharmacy operations
+Cashier	Invoices, receipts, payments and shift reconciliation
+Billing Officer	Charges, adjustments and billing review within assigned permissions
+Insurance Officer	Eligibility, preauthorization, claims and payer reconciliation
+Ward Manager	Ward staffing, beds, transfers and operational oversight
+OT / Surgical Team	Assigned theatre and surgical records
+Inventory Officer	Stock, purchase requests, receiving and transfers
+Procurement Manager	Supplier management, purchasing and approvals
+HR Manager	Employee records, attendance and authorized payroll functions
+Accountant / Finance Manager	Financial reports, receivables and approved accounting functions
+Auditor / Compliance Officer	Read-only access to specifically authorized records and audit trails
+Patient	Own permitted records, appointments, invoices and approved results
+External Referrer	Explicitly authorized referral information only
+
+Also support temporary access, delegated responsibilities, branch-level restrictions, department assignments, shift-based permissions, and emergency “break-glass” access with a reason and mandatory audit logging.
+
+Important: Hiding menu items is not security. The backend and database rules must independently enforce every permission, including which patient records a person can access and which fields they can modify. Firebase's official documentation explains the importance of independent Security Rules for Firestore and Storage. 
+Firebase+1
+
+4. Industry-grade security architecture
+Patient data is highly sensitive. The application should be designed using defense in depth, with security requirements enforced in the database, trusted backend, identity system, deployment pipeline, and operational procedures.
+Identity and authentication
+
+Firebase Authentication, email verification, secure session handling, optional MFA, strong password policies, account lockout or throttling, secure recovery, and administrative account protection.
+
+
+RBAC and ABAC authorization
+
+Role-based access control (RBAC), attribute-based access control (ABAC), tenant and branch isolation, patient assignment restrictions, department-level access, and least privilege.
+
+
+Data protection
+
+Encryption in transit and at rest, strict Firestore and Storage rules, server-side validation, minimum necessary data exposure, protected exports, secure backups, and controlled retention.
+
+
+Audit and accountability
+
+Record logins, access to sensitive records, exports, edits, medication orders, result releases, billing adjustments, permissions changes, and emergency access. Prevent ordinary application users from modifying audit records.
+
+
+Application and API security
+
+Server-side input validation, output encoding, CSRF protection where applicable, secure cookies, rate limiting, abuse detection, dependency scanning, secret management, and protection against common web vulnerabilities.
+
+
+Monitoring and resilience
+
+Centralized logs, security alerts, error monitoring, backup verification, recovery testing, deployment rollback and incident response procedures.
+
+
+
+Non-negotiable security requirements
+1. No public patient records. All patient and clinical data must require explicit authorization.
+2. No trusted roles from client-side input. Users must not be able to make themselves administrators by editing Firestore documents or browser state.
+3. Trusted backend for sensitive operations. Use Cloud Functions or protected server-side handlers for permissions changes, final billing calculations, financial adjustments, result authorization, privileged workflows and other sensitive transactions.
+4. Firestore and Storage Security Rules must be restrictive. Default-deny rules, field-level validation where supported, tenant checks and automated negative tests.
+5. Separate environments. Development, staging and production should use distinct Firebase projects, credentials, test data and deployment controls.
+6. Protect secrets. Never place service-account private keys, payment secrets or administrative credentials in frontend environment variables or Git.
+7. Audit sensitive access. Keep a separate, controlled audit trail with actor, action, resource, timestamp, tenant, outcome and reason where appropriate.
+8. Protect against abuse. Use Firebase App Check, request throttling, validation, abuse monitoring and suitable bot protection. App Check complements rather than replaces Authentication and authorization. 
+   Firebase+1
+9. Secure document access. Use private Cloud Storage, short-lived signed URLs where appropriate, content-type and file-size validation, safe file handling and download authorization.
+10. Automated security testing. Use Firebase Local Emulator Suite, unit tests for access rules, integration tests, dependency scanning and penetration testing before deployment.
+11. Clinical safety controls. Record who prescribed, administered, verified or amended a clinical item; require appropriate verification for high-risk workflows.
+12. Disaster recovery. Define recovery time and recovery point objectives, configure suitable backup retention, and test restoration rather than assuming backups work.
+Use the current OWASP Application Security Verification Standard as a structured security-testing baseline. 
+OWASP Application Security Verification Standard+1
+
+
+Healthcare compliance note: Technical controls do not automatically make the application HIPAA-compliant or compliant with Pakistan's applicable privacy, healthcare, licensing and medical-record requirements. Validate the deployment, contracts, data residency, consent, retention, access logging and regulatory obligations with qualified professionals before storing real patient data.
+5. Recommended architecture with Firebase
+Web application
+
+Next.js · React · TypeScript · Tailwind CSS
+
+Role-specific dashboards and validated forms
+
+Authentication and access policy
+
+Firebase Auth · Session verification · RBAC/ABAC
+
+Trusted application backend
+
+Cloud Functions for Firebase · Protected Next.js handlers
+
+Validation · Authorization · Transactions · Audit events
+
+Cloud Firestore
+
+Operational records, clinical data, appointments, orders and billing
+
+
+Cloud Storage
+
+Private documents, approved reports, attachments and exports
+
+
+Audit and logging
+
+Security events, controlled audit records and operational monitoring
+
+
+Integrations and jobs
+
+Notifications, scheduled workflows, payments and external APIs
+
+
+
+
+Suggested Firestore data model
+Use explicit tenant and resource ownership relationships rather than one giant document per patient.
+Collection / domain	Example records
+tenants	Hospital organizations and subscription settings
+branches	Hospitals, clinics, locations and facilities
+users	Staff identity mapping and account status
+staffProfiles	Professional details and department assignments
+roles / permissions	Permission definitions and role assignments
+patients	Patient demographics and MRN
+encounters	OPD, emergency and inpatient encounters
+appointments	Booking, check-in and cancellation states
+clinicalNotes	Assessments, progress notes and amendments
+vitals	Timestamped observations
+diagnoses	Encounter-linked diagnosis records
+medicationOrders	Prescriptions and medication orders
+medicationAdministrations	Actual medication administration events
+labOrders / labResults	Investigations, specimens and verified results
+imagingOrders / imagingReports	Imaging requests and reports
+admissions / beds	Admission lifecycle, allocation and transfers
+invoices / payments	Charges, balances and payment records
+insuranceClaims	Payer, authorization and claims lifecycle
+inventoryItems / stockMovements	Stock balances, lots and movement ledger
+purchaseOrders	Procurement and supplier transactions
+auditEvents	Protected application audit events
+notifications / tasks	Reminders, assignments and workflow events
+documents	Metadata and references to private stored files
+
+Every tenant-owned record should carry or inherit a verifiable tenant boundary. Include tenantId, branch identifiers where relevant, resource IDs, creation metadata, and lifecycle state. Enforce access restrictions in rules and trusted backend operations.
+
+For sensitive data, avoid putting the entire clinical history, billing history, and permissions into one document. Use bounded documents, separate access domains, and carefully controlled references. Keep audit events append-only through the application architecture and restrict who can access the underlying logging infrastructure.
+Firestore limitations to account for
+- It is a document database, not a relational database; design query patterns and indexes in advance.
+- Cross-collection reporting and complex financial reconciliation can be expensive or awkward.
+- Multi-document transactions have operational limits and require careful contention management.
+- Server-side Firebase Admin SDK operations bypass Firestore Security Rules, so backend authorization must be implemented independently.
+- Never calculate authoritative totals, grant privileges, or approve sensitive clinical transitions exclusively in the browser.
+For extensive financial reporting, interoperability and clinical analytics, consider exporting data to BigQuery or adding a relational backend where appropriate. FHIR is a useful interoperability standard for structured healthcare records and exchanges; plan for it in the integration layer rather than assuming a custom schema is automatically FHIR-compatible. 
+FHIR v5.0.0+1
+
+6. Complete master prompt for VS Code
+Copy the prompt below into your coding agent in VS Code. It is designed for GitHub Copilot, an AI coding extension, or another coding agent that can inspect and modify your project files.
+
+The prompt deliberately requires the agent to build a real application incrementally, instead of generating dozens of decorative pages with fake functionality.
+
+
+
+# MASTER PROJECT PROMPT — ENTERPRISE HOSPITAL MANAGEMENT SYSTEM
+
+## 1. PROJECT OBJECTIVE
+
+Act as a senior software architect, healthcare information systems specialist, senior full-stack engineer, database architect, UI/UX designer, and application security engineer.
+
+Build a comprehensive, modular, multi-tenant Hospital Management System (HMS) for clinics, hospitals, and multi-branch healthcare organizations.
+
+The application must be production-oriented, maintainable, responsive, secure by design, accessible, and suitable for further development into a commercial SaaS product.
+
+Do not build a simple CRUD demonstration, static dashboard, template-only interface, or collection of disconnected pages. Implement complete workflows with persistent data, meaningful validation, correct relationships, permission enforcement, error handling, and automated tests.
+
+Do not claim the application is production-ready, healthcare-compliant, or secure merely because code has been generated. Provide the required implementation, tests, configuration, and deployment documentation, and explicitly identify anything requiring external configuration, professional review, or further verification.
+
+## 2. TECHNOLOGY STACK — USE THESE TECHNOLOGIES
+
+Frontend:
+- Next.js with App Router and a compatible stable release.
+- React.
+- TypeScript with strict mode enabled.
+- Tailwind CSS.
+- shadcn/ui and Radix UI components where appropriate.
+- Lucide React icons.
+- React Hook Form for complex forms.
+- Zod for schema validation.
+- TanStack Table for advanced data tables.
+- Recharts for analytics.
+- date-fns for date formatting and manipulation.
+- A maintained accessible calendar component for scheduling.
+
+Backend:
+- Firebase Authentication.
+- Cloud Firestore.
+- Cloud Storage for Firebase.
+- Cloud Functions for Firebase using TypeScript.
+- Firebase App Check.
+- Firebase Admin SDK for trusted server-side operations.
+- Firebase Local Emulator Suite for development and testing.
+
+Supporting services:
+- Google Cloud Secret Manager for server-side secrets.
+- Cloud Logging and appropriate monitoring.
+- Firebase Hosting or another supported Next.js hosting platform.
+- Git and GitHub for version control.
+- Automated CI checks for linting, type checking, testing, and build validation.
+
+Testing:
+- Vitest for unit tests.
+- Firebase Emulator Suite for Firestore and Storage security-rule tests.
+- React Testing Library for component tests.
+- Playwright for end-to-end tests.
+
+Use npm as the package manager unless the existing repository already uses a different package manager. Preserve a consistent lockfile.
+
+Do not introduce Python, PHP, Java, or another backend language unless a documented requirement justifies a separate service.
+
+## 3. ARCHITECTURE AND CODE QUALITY
+
+Use a modular, domain-oriented architecture.
+
+Suggested project structure:
+
+src/
+  app/
+    (auth)/
+    (dashboard)/
+    api/
+  components/
+    ui/
+    layout/
+    forms/
+    tables/
+    charts/
+    clinical/
+  features/
+    dashboard/
+    patients/
+    appointments/
+    encounters/
+    emergency/
+    admissions/
+    doctors/
+    nursing/
+    laboratory/
+    radiology/
+    pharmacy/
+    billing/
+    insurance/
+    operation-theatre/
+    blood-bank/
+    inventory/
+    procurement/
+    hr/
+    payroll/
+    reports/
+    patient-portal/
+    notifications/
+    audit/
+    settings/
+  lib/
+    firebase/
+    auth/
+    authorization/
+    validation/
+    security/
+    errors/
+    logging/
+    dates/
+  hooks/
+  types/
+  config/
+
+functions/
+  src/
+    auth/
+    patients/
+    encounters/
+    appointments/
+    billing/
+    clinical/
+    inventory/
+    notifications/
+    audit/
+    scheduled/
+    index.ts
+
+tests/
+  unit/
+  integration/
+  security/
+  e2e/
+
+Use the above as a starting point, not a rigid requirement. Adapt the structure where appropriate and explain important architectural decisions.
+
+Requirements:
+- Keep React components focused and reusable.
+- Separate presentation, business logic, validation, data access, and authorization.
+- Define typed domain models and service interfaces.
+- Avoid giant components and giant service files.
+- Avoid duplicated business rules.
+- Use server-side validation for all sensitive operations.
+- Use Firestore transactions or batched writes where their semantics are appropriate.
+- Design around documented Firestore query and transaction limits.
+- Add pagination to large lists.
+- Use server-side filtering and sorting where practical.
+- Use loading, empty, success, and error states consistently.
+- Avoid unnecessary real-time listeners.
+- Provide structured logging without exposing sensitive patient data.
+- Use meaningful naming, comments for complex rules, and consistent error handling.
+- Never leave core functionality as a TODO, fake API call, or hardcoded demonstration.
+- Clearly distinguish implemented features from planned integrations.
+
+## 4. DESIGN SYSTEM AND USER EXPERIENCE
+
+Build a polished, enterprise healthcare interface.
+
+Visual direction:
+- Clean, modern hospital administration design.
+- Light theme by default with an optional dark theme.
+- Neutral backgrounds, clear typography, restrained medical accent colors.
+- Consistent spacing, border radii, shadows, icons, and component sizes.
+- High information density without visual clutter.
+- Accessible contrast and keyboard navigation.
+- Responsive layouts for desktop, tablet, and mobile.
+- Use desktop-oriented data tables where necessary and adapt them intelligently on smaller screens.
+
+Application layout:
+- Collapsible left sidebar.
+- Top navigation bar.
+- Hospital and branch selector.
+- Global patient search.
+- Notification center.
+- User profile and secure account actions.
+- Breadcrumbs.
+- Page-specific action buttons.
+- Responsive content area.
+- Reusable filter panels and table toolbars.
+
+Create reusable components for:
+- Stat cards.
+- Data tables.
+- Search and filter controls.
+- Date range selectors.
+- Pagination.
+- Status badges.
+- Confirmation dialogs.
+- Form validation.
+- Toast notifications.
+- File upload.
+- Patient summaries.
+- Timeline views.
+- Printable documents.
+- Empty states and error boundaries.
+
+Do not use random colors or inconsistent layouts across modules.
+
+## 5. AUTHENTICATION AND ONBOARDING
+
+Implement:
+- Secure sign-in and sign-out.
+- Account invitation and staff onboarding.
+- Email verification.
+- Password reset.
+- Account status and administrative deactivation.
+- Optional MFA and a documented enforcement policy.
+- Session expiration and reauthentication for sensitive actions.
+- Protected routes and server-side session verification.
+- Secure session cookies if using a cookie-based Next.js session architecture.
+- Login and security event logging.
+- Rate limiting and abuse protection.
+- A secure first-time hospital setup process.
+
+Never allow public self-registration to create an administrator or grant hospital access automatically.
+
+Use trusted server-side processes to create initial administrators and provision organizations. Verify authorization independently for every privileged operation.
+
+## 6. ROLE-BASED AND ATTRIBUTE-BASED ACCESS CONTROL
+
+Implement granular permissions, not only basic role checks.
+
+Initial roles:
+1. Platform Super Administrator.
+2. Hospital Administrator.
+3. Medical Director.
+4. Receptionist.
+5. Doctor.
+6. Nurse.
+7. Emergency Staff.
+8. Laboratory Technician.
+9. Laboratory Supervisor.
+10. Radiologist.
+11. Pharmacist.
+12. Cashier.
+13. Billing Officer.
+14. Insurance Officer.
+15. Ward Manager.
+16. OT Staff.
+17. Blood Bank Staff.
+18. Inventory Officer.
+19. Procurement Manager.
+20. HR Manager.
+21. Accountant.
+22. Auditor.
+23. Patient.
+24. External Referrer.
+
+Support:
+- Role and permission assignments.
+- Tenant and branch restrictions.
+- Department restrictions.
+- Assigned-patient access.
+- Resource ownership where applicable.
+- Read, create, update, approve, release, export, and delete permissions as distinct capabilities.
+- Temporary delegation.
+- Restricted emergency access with mandatory justification.
+- Permission change history.
+- Periodic access reviews.
+- Revocation of access when staff accounts are deactivated.
+
+Do not trust a role, tenant ID, patient ID, or permission sent by the browser.
+
+Use Firebase custom claims only for suitable coarse-grained claims. Use trusted authorization services for dynamic resource-level permissions. Ensure every authorization decision is based on verified identity and trusted data.
+
+Create a permission matrix and automated tests proving that unauthorized roles cannot access protected records or perform privileged actions.
+
+## 7. HOSPITAL ADMINISTRATION
+
+Implement:
+- Hospital organization profiles.
+- Multiple branches and facilities.
+- Departments, specialties, wards, rooms, beds, and service units.
+- Doctor schedules and staff shifts.
+- Hospital working hours and holidays.
+- Consultation and service pricing.
+- Billing categories, discount policies, and taxes.
+- Document numbering sequences.
+- Configurable hospital branding.
+- Document templates.
+- Notification settings.
+- Operational settings.
+- Feature flags and module activation.
+- Data retention settings.
+- Audit and compliance configuration.
+
+Every hospital-owned record must have an enforced tenant boundary.
+
+## 8. PATIENT REGISTRATION AND EHR
+
+Implement:
+- Unique medical record number (MRN).
+- Patient registration and demographic details.
+- Contact information and emergency contacts.
+- Date of birth and identity fields where appropriate.
+- Duplicate patient detection.
+- Authorized patient merge with a full audit trail.
+- Medical and surgical history.
+- Family history.
+- Allergies and adverse reactions.
+- Medication history.
+- Diagnoses and problems.
+- Vital signs.
+- Clinical notes.
+- Consultation history.
+- Laboratory and radiology results.
+- Procedures and referrals.
+- Admission and discharge history.
+- Uploaded documents.
+- Consent and disclosure records.
+- Authorized guardian or proxy access.
+- Patient profile timeline.
+- Patient summary printing.
+
+Store clinical records in appropriately separated documents with timestamps, authorship, encounter references, and controlled lifecycle states.
+
+Preserve original clinical entries and amendment history. Do not silently overwrite finalized clinical records.
+
+## 9. APPOINTMENTS AND OPD
+
+Implement:
+- Doctor availability and schedules.
+- Appointment booking.
+- Walk-in patients.
+- Slot availability and conflict prevention.
+- Appointment rescheduling and cancellation.
+- Waiting lists.
+- Check-in and token numbers.
+- Queue management.
+- Appointment reminders.
+- Follow-up appointments.
+- No-show tracking.
+- Doctor consultation worklists.
+- Consultation notes and vital signs.
+- Diagnoses and orders.
+- Prescriptions.
+- Referrals.
+- Visit billing.
+- Appointment reports.
+
+Prevent overlapping bookings using trusted backend logic and suitable transactional controls.
+
+Define clear appointment lifecycle states and allowed transitions.
+
+## 10. EMERGENCY DEPARTMENT
+
+Implement:
+- Rapid patient registration.
+- Unidentified-patient workflow.
+- Triage categories and assessment records.
+- Presenting complaint.
+- Arrival mode and initial observations.
+- Emergency assessment.
+- Clinical orders and treatment timeline.
+- Critical alerts.
+- Escalation and referral.
+- Transfer and admission requests.
+- Emergency bed allocation.
+- Disposition tracking.
+- Emergency billing.
+- Time-stamped staff actions.
+- Handover documentation.
+
+Emergency workflows must support rapid documentation without bypassing identity checks, audit logging, or clinical safety controls.
+
+## 11. INPATIENT MANAGEMENT
+
+Implement:
+- Admission requests and admission approval.
+- Admission, discharge, and transfer workflows.
+- Ward and bed management.
+- Bed reservations and occupancy.
+- Patient transfers.
+- Attending doctor and care team assignments.
+- Daily progress notes.
+- Nursing assessments.
+- Medication administration records.
+- Investigation orders.
+- Procedures and care plans.
+- Discharge planning.
+- Medication reconciliation.
+- Discharge summaries.
+- Final bill preparation.
+- Bed cleaning and maintenance status.
+- Length-of-stay reporting.
+- Occupancy reporting.
+- Isolation and safety alerts.
+
+Prevent double allocation of beds and invalid admission or discharge transitions.
+
+## 12. DOCTOR AND CLINICAL MANAGEMENT
+
+Implement:
+- Doctor profiles and credentials.
+- Specialty and department assignment.
+- Consultation schedules.
+- Clinical assessment templates.
+- SOAP notes.
+- Diagnoses and diagnosis coding.
+- Differential diagnoses.
+- Treatment plans.
+- Medication orders.
+- Laboratory and imaging orders.
+- Procedures and referrals.
+- Follow-up instructions.
+- Clinical alerts.
+- Signed notes.
+- Amendments and addenda.
+- Clinical activity reporting.
+
+Clearly distinguish draft, signed, amended, and finalized records.
+
+Clinical decision support must use validated data and approved rules. Do not generate autonomous diagnoses or treatment recommendations without appropriate clinical validation and oversight.
+
+## 13. NURSING MANAGEMENT
+
+Implement:
+- Nursing assessments.
+- Vital signs and observation charts.
+- Nursing care plans.
+- Intake and output.
+- Pain assessments.
+- Medication administration records.
+- Missed or withheld medication documentation.
+- Shift handovers.
+- Nursing tasks.
+- Wound care.
+- Patient safety checklists.
+- Escalation events.
+- Care completion records.
+
+Record the actual administering staff member, relevant timestamps, and medication details.
+
+Do not treat a prescription as proof that medication was administered.
+
+## 14. LABORATORY INFORMATION SYSTEM
+
+Implement:
+- Test catalog and test panels.
+- Reference intervals and units.
+- Specimen requirements.
+- Lab orders.
+- Specimen collection.
+- Barcode labels.
+- Accession numbers.
+- Specimen receipt and rejection.
+- Technician worklists.
+- Result entry.
+- Result validation.
+- Authorized result verification.
+- Critical result escalation.
+- Corrected results and version history.
+- Printable reports.
+- Turnaround-time reports.
+- Quality-control records.
+- Analyzer integration interfaces.
+
+Separate result entry from result verification and release where required by laboratory policy.
+
+## 15. RADIOLOGY AND IMAGING
+
+Implement:
+- Imaging test catalog.
+- Imaging orders.
+- Scheduling.
+- Modality worklists.
+- Patient preparation.
+- Study tracking.
+- Radiologist assignments.
+- Report drafts.
+- Authorized report finalization.
+- Report amendments.
+- Urgent findings notifications.
+- PACS and DICOM integration interfaces.
+- Image references.
+- Imaging utilization reports.
+
+Do not store large imaging datasets directly in ordinary Firestore documents. Integrate with appropriate imaging storage and PACS infrastructure.
+
+## 16. PHARMACY AND MEDICATIONS
+
+Implement:
+- Medication catalog.
+- Generic and brand names.
+- Dosage forms and strengths.
+- Prescriptions.
+- Dispensing.
+- Medication reconciliation.
+- Allergy checks.
+- Interaction checks using validated sources.
+- Pharmacy inventory.
+- Batch and expiry tracking.
+- FEFO stock handling.
+- Stock reservations.
+- Inpatient medication issues.
+- Returns and recalls.
+- Controlled-medicine workflows where applicable.
+- Dispensing audit trail.
+- Pharmacy billing.
+- Low-stock alerts.
+- Medication utilization reports.
+
+Use a stock movement ledger and appropriate transaction controls. Do not permit dispensing more stock than is available without an explicitly authorized, documented exception.
+
+## 17. BILLING AND FINANCE
+
+Implement:
+- Service catalog and pricing.
+- OPD and IPD invoices.
+- Consultation charges.
+- Laboratory and imaging charges.
+- Procedure charges.
+- Pharmacy charges.
+- Room and bed charges.
+- Itemized bills.
+- Deposits and advances.
+- Payments and receipts.
+- Payment allocation.
+- Refunds and credit notes.
+- Discounts and approvals.
+- Taxes and concessions.
+- Outstanding balances.
+- Patient statements.
+- Cashier shifts.
+- Cash reconciliation.
+- Daily closing reports.
+- Revenue analytics.
+- Accounting exports.
+
+Calculate authoritative totals on the trusted backend.
+
+Use integer minor currency units or another explicitly defined decimal-safe representation. Never use binary floating-point arithmetic for authoritative financial calculations.
+
+Make invoice numbering, payment allocation, refunds, and adjustments transaction-safe and auditable.
+
+Do not silently edit finalized invoices or delete posted financial transactions. Use documented adjustment, reversal, and credit-note workflows.
+
+## 18. INSURANCE AND CORPORATE BILLING
+
+Implement:
+- Insurers and corporate customers.
+- Coverage and eligibility records.
+- Authorization requests.
+- Authorization approvals and denials.
+- Coverage limits and exclusions.
+- Corporate tariffs.
+- Claims preparation.
+- Supporting documents.
+- Claim submission status.
+- Claim tracking.
+- Rejections and resubmissions.
+- Co-payments and deductions.
+- Receivables.
+- Aging reports.
+- Reconciliation.
+
+Design integration interfaces for external payer systems. Do not simulate successful external submissions when no integration is configured.
+
+## 19. OPERATION THEATRE
+
+Implement:
+- Theatre schedules.
+- Surgeon and anesthesia team assignments.
+- Procedure bookings.
+- Pre-operative assessments.
+- Consent verification.
+- Pre-operative checklists.
+- Operative notes.
+- Anesthesia documentation.
+- Surgical safety checklists.
+- Instrument and equipment checklists.
+- Recovery records.
+- Post-operative instructions.
+- Theatre utilization reports.
+- Cancellation tracking.
+
+## 20. BLOOD BANK
+
+Implement:
+- Donor records.
+- Donation records.
+- Screening.
+- Blood grouping.
+- Component preparation.
+- Component inventory.
+- Unit identification.
+- Expiry and storage tracking.
+- Crossmatch requests.
+- Compatibility verification.
+- Blood issue and return.
+- Transfusion documentation.
+- Reaction reporting.
+- Quarantine and recall.
+- Donation-to-recipient traceability.
+
+Implement only under appropriate blood bank procedures and qualified clinical oversight.
+
+## 21. INVENTORY AND PROCUREMENT
+
+Implement:
+- Inventory categories.
+- Medical supplies and equipment.
+- Multiple stores.
+- Stock balances.
+- Stock movement ledger.
+- Batch and expiry management.
+- Stock transfers.
+- Physical stock counts.
+- Adjustments with approval.
+- Purchase requests.
+- Supplier quotations.
+- Purchase orders.
+- Goods receipt.
+- Supplier returns.
+- Supplier invoices.
+- Reorder levels.
+- Asset register.
+- Equipment maintenance.
+- Inventory valuation reports.
+
+Use transaction-safe stock movements and idempotency controls to prevent duplicate processing.
+
+## 22. HR AND PAYROLL
+
+Implement:
+- Employee records.
+- Departments and designations.
+- Staff qualifications.
+- License and credential expiry alerts.
+- Duty rosters.
+- Attendance.
+- Leave requests and approvals.
+- Overtime.
+- Payroll configuration.
+- Allowances and deductions.
+- Payslips.
+- Payroll reports.
+- Training records.
+- Performance records.
+
+Restrict payroll and personnel records to authorized staff. Keep payroll configuration jurisdiction-specific and do not assume that a generic formula satisfies local employment and tax requirements.
+
+## 23. ADDITIONAL HOSPITAL MODULES
+
+Design the application to support the following as independently configurable modules:
+- Ambulance and transport.
+- Dietary and kitchen services.
+- CSSD and sterilization.
+- Physiotherapy and rehabilitation.
+- Dialysis.
+- Oncology and infusion.
+- Maternity and newborn care.
+- ICU and critical care.
+- Infection prevention.
+- Quality and patient safety.
+- Medical records and document management.
+- Facilities and biomedical equipment maintenance.
+- Internal help desk and tasks.
+- Telemedicine.
+- Research and clinical trials.
+- Vaccination and preventive care.
+- FHIR and HL7 integration.
+- DICOM/PACS integration.
+- Multi-hospital SaaS management.
+- Configurable workflows and notifications.
+- Backup and disaster recovery administration.
+
+Implement the foundation and core operational modules first. Add specialized clinical modules through separate, testable implementation phases.
+
+## 24. PATIENT PORTAL
+
+Implement:
+- Secure patient sign-in.
+- Own-profile access.
+- Appointment requests.
+- Appointment history.
+- Approved report access.
+- Prescriptions.
+- Invoices and receipts.
+- Payment status.
+- Follow-up reminders.
+- Consent records.
+- Authorized guardian access.
+- Profile update requests.
+
+Patients must never be able to enumerate or access another patient's records.
+
+Verify patient-to-account relationships on the backend. Do not trust a patient ID supplied by the client.
+
+## 25. NOTIFICATIONS AND WORKFLOW ENGINE
+
+Implement:
+- In-app notifications.
+- Appointment reminders.
+- Pending task alerts.
+- Critical laboratory-result notifications.
+- Approval requests.
+- Low-stock alerts.
+- Expiry alerts.
+- Claim status notifications.
+- Credential expiry reminders.
+- Escalation workflows.
+- Scheduled jobs.
+- Retry handling.
+- Idempotent event processing.
+- Notification delivery status.
+
+Use an outbox or equivalent reliable event-processing design where appropriate.
+
+Avoid putting sensitive medical information in email, SMS, push notifications, or application logs. Use minimal notification content and direct authorized users to secure records.
+
+## 26. REPORTING AND ANALYTICS
+
+Implement dashboards and reports for:
+- Patient registrations.
+- OPD and IPD activity.
+- Appointment volumes.
+- Waiting times.
+- Doctor utilization.
+- Admissions and discharges.
+- Bed occupancy.
+- Average length of stay.
+- Emergency activity.
+- Lab turnaround time.
+- Imaging activity.
+- Pharmacy sales and stock.
+- Inventory valuation.
+- Revenue by department and service.
+- Outstanding invoices.
+- Insurance claim aging.
+- Refunds and discounts.
+- Cashier reconciliation.
+- HR and staffing.
+- Quality and patient safety.
+- Audit and security events.
+
+Include date filters, branch filters, department filters, pagination, export permissions, and report-generation timestamps.
+
+Protect reports against unauthorized cross-tenant access and excessive disclosure of sensitive information.
+
+Do not run expensive full-database queries for every dashboard load. Use appropriate indexes, aggregation strategies, scheduled summaries, and analytics exports.
+
+## 27. FIRESTORE DATA MODEL
+
+Create a documented schema and data dictionary for:
+- tenants
+- branches
+- users
+- staffProfiles
+- roles
+- permissionAssignments
+- departments
+- patients
+- encounters
+- appointments
+- clinicalNotes
+- vitals
+- diagnoses
+- allergies
+- medicationOrders
+- medicationAdministrations
+- labOrders
+- specimens
+- labResults
+- imagingOrders
+- imagingReports
+- admissions
+- beds
+- invoices
+- invoiceItems
+- payments
+- refunds
+- insuranceClaims
+- inventoryItems
+- stockLots
+- stockMovements
+- suppliers
+- purchaseOrders
+- employees
+- auditEvents
+- notifications
+- tasks
+- documents
+- settings
+
+Adapt the schema where necessary. Do not create a collection solely because it appears in this list if a better documented structure is justified.
+
+For every entity define:
+- Field names and types.
+- Required and optional fields.
+- Validation rules.
+- Tenant and branch ownership.
+- Relationships and reference strategy.
+- Creation and update metadata.
+- Lifecycle states.
+- Access-control requirements.
+- Query patterns and indexes.
+- Retention requirements.
+- Audit requirements.
+
+Use server-generated identifiers and trusted timestamps for authoritative operations. Do not rely on browser-provided timestamps, prices, user roles, or ownership fields.
+
+Avoid excessively large documents and unbounded arrays.
+
+## 28. FIREBASE SECURITY
+
+Create:
+- firestore.rules
+- storage.rules
+- firestore.indexes.json
+- firebase.json
+- Appropriate Emulator Suite configuration.
+- Automated authorization tests.
+
+Security requirements:
+- Default-deny access.
+- No public patient or clinical records.
+- Explicit authentication checks.
+- Tenant isolation.
+- Branch and resource-level authorization.
+- Least privilege.
+- Schema and field validation in rules where supported.
+- Restrictions on protected fields.
+- No client-controlled privilege escalation.
+- Private document storage.
+- File-size and content-type restrictions.
+- Server-side authorization for administrative operations.
+- App Check configuration and enforcement plan.
+- Abuse prevention and rate limiting.
+- Separate development, staging, and production projects.
+
+Never use allow-all rules in any committed configuration.
+
+Never rely exclusively on frontend checks for security.
+
+Firebase Admin SDK operations bypass Firestore Security Rules. Every privileged backend function must verify the caller's identity, tenant, role, permissions, resource scope, input, and allowed state transition.
+
+Do not store secrets in source code, public environment variables, Git history, or browser bundles.
+
+## 29. AUDIT AND CLINICAL RECORD INTEGRITY
+
+Create structured audit events for:
+- Authentication and account security.
+- Patient record access where required.
+- Clinical note creation and amendment.
+- Prescription creation and modification.
+- Medication administration.
+- Lab result verification and release.
+- Imaging report finalization.
+- Patient record exports.
+- Billing adjustments and refunds.
+- Stock adjustments.
+- Permission changes.
+- Emergency access.
+- Administrative configuration changes.
+
+Each event should include appropriate actor, tenant, resource type, resource ID, action, timestamp, outcome, and justification where required.
+
+Do not place unnecessary clinical details, passwords, tokens, or secrets in logs.
+
+Prevent ordinary users from modifying or deleting audit records. Use appropriately restricted logging infrastructure, retention policies, and independent monitoring for high-risk events.
+
+Clinical amendments must preserve previous versions and identify the author and reason when required.
+
+## 30. SECURITY ENGINEERING
+
+Use OWASP ASVS as a verification baseline.
+
+Implement and test:
+- Authentication and session security.
+- Authorization on every protected operation.
+- Input validation.
+- Output encoding.
+- Protection against XSS, CSRF where applicable, injection, IDOR/BOLA, and open redirects.
+- Secure HTTP headers and an appropriate Content Security Policy.
+- Rate limiting.
+- Abuse detection.
+- Safe file uploads.
+- Dependency and vulnerability scanning.
+- Secret management.
+- Secure error handling.
+- Audit integrity.
+- Backup and recovery procedures.
+- Sensitive export controls.
+- Security event monitoring.
+
+Use current supported package versions and review official documentation before selecting APIs.
+
+Do not claim penetration testing, certification, compliance, or security verification has been completed unless evidence exists.
+
+## 31. HEALTHCARE INTEROPERABILITY
+
+Design a dedicated integration layer for:
+- HL7 FHIR resources and APIs.
+- HL7 messaging where required.
+- DICOM and PACS.
+- Laboratory analyzer integrations.
+- Payment gateways.
+- Accounting software.
+- Email and SMS providers.
+- External identity providers where appropriate.
+
+Use versioned APIs, authentication, authorization, request validation, audit logs, retry handling, and idempotency.
+
+Document external system dependencies and required credentials.
+
+Do not invent successful integration results or represent a custom Firestore schema as FHIR-compliant without actual mapping and conformance validation.
+
+## 32. BACKUPS AND DISASTER RECOVERY
+
+Provide:
+- Documented backup configuration.
+- Appropriate backup retention.
+- Backup access restrictions.
+- Recovery point objective and recovery time objective documentation.
+- Restoration testing.
+- Disaster recovery procedures.
+- Incident response documentation.
+- Downtime and manual-operation procedures.
+- Data export and migration planning.
+
+Do not claim that automatic Firestore backup or point-in-time recovery is configured unless the relevant service and retention settings have actually been enabled and verified.
+
+## 33. DEMONSTRATION DATA
+
+Create an explicit demo-data seeding script for the local development environment.
+
+Use fictional patients, staff, appointments, clinical records, and billing data.
+
+Never use real patient records in development or tests.
+
+Keep demo data separate from production. Do not silently seed fake patients or fake transactions into a real hospital environment.
+
+## 34. TESTING REQUIREMENTS
+
+Write automated tests for:
+- Authentication and session handling.
+- Role and permission enforcement.
+- Tenant isolation.
+- Unauthorized patient access.
+- Appointment conflict prevention.
+- Bed allocation conflicts.
+- Duplicate request handling.
+- Clinical record amendments.
+- Lab result verification.
+- Medication dispensing and stock consistency.
+- Invoice calculations.
+- Payment allocation and refunds.
+- Permission changes.
+- File access restrictions.
+- Audit event generation.
+- Form validation.
+- Critical user journeys.
+- Production build and type checking.
+
+Include both authorized and unauthorized cases.
+
+Test that users from Hospital A cannot access records belonging to Hospital B, even if they know a document ID.
+
+Test that a receptionist cannot access clinical records beyond their granted permissions, and that a doctor cannot modify financial or administrative data without explicit authorization.
+
+## 35. DOCUMENTATION
+
+Create:
+- README.md
+- docs/ARCHITECTURE.md
+- docs/DATA_MODEL.md
+- docs/PERMISSIONS_MATRIX.md
+- docs/SECURITY.md
+- docs/DEPLOYMENT.md
+- docs/BACKUP_AND_RECOVERY.md
+- docs/INTEGRATIONS.md
+- docs/TESTING.md
+- docs/IMPLEMENTATION_STATUS.md
+- .env.example
+
+Document:
+- Required tools.
+- Local installation.
+- Environment variables.
+- Firebase project setup.
+- Emulator setup.
+- Security Rules deployment.
+- Index deployment.
+- Authentication configuration.
+- Initial administrator provisioning.
+- Test execution.
+- Build and deployment.
+- Backup configuration.
+- External integrations.
+- Known limitations.
+- Outstanding compliance and security reviews.
+
+Never put real credentials in .env.example.
+
+## 36. IMPLEMENTATION STRATEGY
+
+Do not attempt to implement every advanced clinical module in one uncontrolled code-generation step.
+
+Work in phases.
+
+PHASE 1 — FOUNDATION
+- Inspect the repository.
+- Establish the architecture and design system.
+- Configure Next.js, TypeScript, linting and testing.
+- Configure Firebase client and server integrations.
+- Set up development and staging environments.
+- Implement authentication, tenant isolation, permissions and audit foundations.
+- Add baseline Security Rules and automated security tests.
+
+PHASE 2 — CORE OPERATIONS
+- Hospital settings.
+- Patient registration.
+- Appointments and OPD.
+- Doctors and staff.
+- Encounters and clinical records.
+- Admissions, wards and beds.
+- Billing and payments.
+
+PHASE 3 — CLINICAL DEPARTMENTS
+- Nursing.
+- Laboratory.
+- Radiology.
+- Pharmacy.
+- Operation theatre.
+- Blood bank.
+
+PHASE 4 — ENTERPRISE OPERATIONS
+- Inventory and procurement.
+- Insurance.
+- HR and payroll.
+- Patient portal.
+- Notifications.
+- Reports and analytics.
+
+PHASE 5 — SPECIALIZED MODULES
+- ICU, dialysis, maternity, oncology, rehabilitation, CSSD, ambulance, dietary services, infection prevention, and other required departments.
+
+PHASE 6 — PRODUCTION HARDENING
+- Security testing.
+- Performance testing.
+- Accessibility checks.
+- Backup and restoration validation.
+- Monitoring.
+- Deployment documentation.
+- Integration testing.
+- Independent security and healthcare compliance review.
+
+## 37. HOW YOU MUST WORK AS THE CODING AGENT
+
+Start by inspecting the current workspace and existing project files.
+
+If the repository already contains code, preserve working functionality and improve the existing architecture instead of unnecessarily replacing everything.
+
+Before major changes:
+1. Summarize the current repository state.
+2. Identify missing dependencies and configuration.
+3. Propose a concise implementation plan.
+4. Identify assumptions and decisions that require confirmation.
+
+Then begin implementing the foundation.
+
+For each phase:
+1. Create or modify the actual files.
+2. Explain important architectural decisions.
+3. Run the available lint, type-check, test, and build commands.
+4. Fix errors caused by the implementation.
+5. Add tests for security-sensitive behavior.
+6. Update implementation status and documentation.
+7. Report what works, what has been tested, and what remains incomplete.
+
+Do not merely print code in chat when you have the ability to edit the workspace.
+
+Do not claim that a command passed unless it was actually executed and its result checked.
+
+Do not replace functional code with placeholders to make the build pass.
+
+Do not weaken security rules to bypass test failures.
+
+Do not silently skip failing tests.
+
+If an external service, Firebase credential, billing account, API key, or deployment permission is unavailable, implement the appropriate integration boundary and document exactly what requires configuration.
+
+If the context or execution limits prevent completing a phase, finish the current safe increment, update the implementation status, and continue from the recorded next task.
+
+## 38. DEFINITION OF DONE
+
+A phase is complete only when:
+- Its core workflows are implemented.
+- Data persists correctly.
+- Forms and business rules are validated.
+- Access is enforced on the backend.
+- Firestore and Storage rules are tested where applicable.
+- Relevant automated tests pass.
+- The application builds successfully.
+- Errors and loading states are handled.
+- Documentation is updated.
+- Remaining limitations are disclosed.
+
+The overall project is not considered production-ready until security testing, operational configuration, backup recovery, clinical validation, privacy review, and applicable regulatory requirements have been independently assessed.
+
+BEGIN NOW: Inspect the current VS Code workspace, report its state, and implement PHASE 1 in small, verifiable steps. Do not generate a superficial dashboard and declare the HMS complete.
+
+
+
+Hospital Management System — Final Architecture and Phase 1
+Your choices are finalized:
+Deployment: Single hospital
+
+One hospital organization with multiple departments, wards, services and optional branches.
+
+
+Scope: Complete modular HMS
+
+All major clinical, administrative, financial and operational modules, delivered incrementally.
+
+
+Development data: Fictional demo data
+
+No real patient information in development or testing.
+
+
+Hosting: Vercel + Firebase
+
+Next.js on Vercel; Firebase provides authentication, database, storage and backend functions.
+
+
+
+The application will be a single-hospital, enterprise-style Hospital Management System, not a multi-tenant SaaS product. Design it so multiple departments and optional physical branches share one hospital's configuration while retaining appropriate access boundaries.
+
+One important distinction: single-hospital deployment does not mean every employee should have unrestricted access to every record. Doctors, nurses, receptionists, laboratory staff, pharmacists, cashiers and administrators must still have different permissions.
+1. Final technology architecture
+Next.js web application
+
+React · TypeScript · App Router · Tailwind CSS · shadcn/ui
+
+Identity and authorization
+
+Firebase Authentication · Secure sessions · RBAC · Resource-level permissions
+
+Trusted backend
+
+Next.js Route Handlers + Firebase Cloud Functions
+
+Validation · Sensitive operations · Transactions · Audit events
+
+Firestore
+
+Patients, encounters, appointments, billing and operational records
+
+
+Cloud Storage
+
+Private clinical documents, attachments and reports
+
+
+Audit and monitoring
+
+Access events, clinical changes, security alerts and error logs
+
+
+Vercel + Google Cloud
+
+Web deployment, secrets, functions, scheduled jobs and recovery
+
+
+
+
+Key implementation decisions
+- Frontend: Next.js App Router, React and strict TypeScript.
+- UI: Tailwind CSS, shadcn/ui, Lucide icons, React Hook Form and Zod.
+- Database: Cloud Firestore with documented collections, indexes and query patterns.
+- Authentication: Firebase Authentication with verified server sessions.
+- Backend: Next.js server-side handlers for web-specific operations and Firebase Cloud Functions for trusted workflows, scheduled tasks and event processing.
+- File storage: Private Firebase Cloud Storage with restrictive rules.
+- Testing: Vitest, Firebase Emulator Suite, React Testing Library and Playwright.
+- Hosting: Vercel for Next.js; Firebase and Google Cloud for backend services.
+Hosting caveat: Vercel does not automatically host your Firebase Cloud Functions. Deploy and manage those functions separately using Firebase tooling. Keep server-only secrets in Vercel's server environment or Google Cloud Secret Manager as appropriate. Do not expose administrative credentials to browser code.
+2. Complete implementation roadmap
+Build all major HMS modules, but implement and verify them in phases so the system remains functional throughout development.
+01
+
+Foundation and security — start here
+Current phase
+Repository setup, design system, Firebase configuration, authentication, session verification, permission model, security rules, audit foundation and automated security tests.
+
+
+
+02
+
+Core hospital operations
+
+Hospital settings, staff, departments, patient registration, MRN generation, appointments, OPD consultations, encounters, wards, beds, admissions and discharge workflows.
+
+
+
+03
+
+Clinical departments
+
+Emergency, nursing, laboratory, radiology, pharmacy, operation theatre, blood bank, medication administration and clinical reporting.
+
+
+
+04
+
+Finance and hospital operations
+
+Billing, payments, refunds, insurance, inventory, procurement, suppliers, HR, payroll, assets and maintenance.
+
+
+
+05
+
+Patient portal and enterprise reporting
+
+Secure patient access, notifications, management dashboards, financial reports, operational analytics and audit reports.
+
+
+
+06
+
+Specialized modules and integrations
+
+ICU, maternity, dialysis, oncology, rehabilitation, CSSD, ambulance, dietary services, FHIR/HL7, DICOM/PACS and external integrations.
+
+
+
+07
+
+Production hardening
+
+Performance tests, security verification, backup restoration drills, monitoring, deployment controls, clinical validation and applicable compliance reviews.
+
+
+
+3. First VS Code coding-agent prompt
+Open your HMS project folder in VS Code and start your coding agent. Paste this prompt first. It instructs the agent to build Phase 1 in the actual workspace rather than simply explain how to build it.
+PHASE 1 — HMS FOUNDATION, FIREBASE SETUP AND SECURITY
+You are working as a senior full-stack engineer and application security architect. Start implementing Phase 1 of my Hospital Management System directly in the current VS Code workspace.
+A. Confirm the project requirements
+Project name: Hospital Management System (HMS)
+
+Deployment model: Single hospital.
+
+Scope: Complete modular hospital management platform.
+
+Development data: Fictional demo data only.
+
+Hosting: Vercel for Next.js; Firebase and Google Cloud for backend services.
+
+Required stack:
+- Next.js App Router
+- React
+- TypeScript with strict mode
+- Tailwind CSS
+- shadcn/ui
+- Firebase Authentication
+- Cloud Firestore
+- Firebase Cloud Storage
+- Firebase Cloud Functions with TypeScript
+- Firebase Admin SDK
+- Firebase App Check
+- Firebase Local Emulator Suite
+- Zod
+- React Hook Form
+- Vitest
+- React Testing Library
+- Playwright
+- ESLint and TypeScript checks
+Use compatible, supported package versions. Inspect the existing project and official documentation before changing dependencies.
+B. First inspect the workspace
+Before editing files:
+1. Inspect the existing directory structure, package.json, lockfile, configuration, and current implementation.
+2. Identify whether the workspace is empty, partially implemented, or an existing Next.js project.
+3. Preserve existing working code and compatible dependencies.
+4. Identify missing tools and required environment configuration.
+5. Present a short plan, then proceed with implementation without waiting for approval on routine decisions.
+6. Do not overwrite existing user work unnecessarily.
+Do not claim to have configured Firebase or deployed anything unless those actions have actually been completed and verified.
+C. Establish the application foundation
+Configure:
+- Next.js App Router.
+- TypeScript strict mode.
+- Tailwind CSS.
+- shadcn/ui.
+- Lucide React.
+- ESLint.
+- Consistent import aliases.
+- Environment variable validation.
+- Reusable error handling.
+- Loading and not-found states.
+- A consistent application layout.
+- Responsive dashboard shell.
+- Accessible form controls and dialogs.
+Create a polished hospital administration interface with:
+- Collapsible sidebar.
+- Top navigation.
+- Hospital identity and branch selector placeholder.
+- Search control.
+- Notification center placeholder.
+- User account menu.
+- Breadcrumbs.
+- Responsive main content.
+- Consistent cards, tables, status badges, dialogs, and form layouts.
+Create a dashboard with clearly labelled DEMO or placeholder metrics where live data is not yet implemented. Never represent fabricated metrics as actual hospital activity.
+D. Configure Firebase safely
+Create separate Firebase client and server initialization modules.
+
+Suggested files:
+- src/lib/firebase/client.ts
+- src/lib/firebase/admin.ts
+- src/lib/firebase/config.ts
+- src/lib/firebase/env.ts
+- src/lib/auth/session.ts
+- src/lib/auth/authorization.ts
+- src/lib/security/audit.ts
+- src/lib/security/validation.ts
+Adapt the file structure to the existing project where appropriate.
+
+Client initialization must use only public Firebase configuration variables.
+
+Server initialization must use Firebase Admin SDK only in server-only modules. Prevent accidental imports into client components.
+
+Use Application Default Credentials or an appropriate supported workload identity mechanism in deployed environments. Do not commit service-account private keys.
+
+Create:
+- firebase.json
+- firestore.rules
+- firestore.indexes.json
+- storage.rules
+- Emulator Suite configuration
+- .env.example
+- .gitignore updates where needed
+Do not invent actual Firebase project credentials. Provide clear setup instructions and safe defaults.
+
+If Firebase credentials are unavailable, ensure the project can still run the non-sensitive interface and clearly report which integration tests require configured emulators.
+E. Authentication and sessions
+Implement:
+- Login page.
+- Sign-out action.
+- Password reset flow.
+- Email verification handling.
+- Protected dashboard routes.
+- Server-side identity verification.
+- Secure cookie-based session handling.
+- Session expiration and revocation strategy.
+- Appropriate handling for disabled or unauthorized accounts.
+- Generic authentication error messages that do not unnecessarily disclose account existence.
+Use Firebase Authentication for identity.
+
+For a cookie-based session architecture, verify Firebase ID tokens server-side before creating sessions, use appropriate HttpOnly, Secure, and SameSite cookie attributes, and validate CSRF protections on state-changing cookie-authenticated requests.
+
+Do not assume that client-side auth state protects a server route.
+
+Do not store authentication tokens or session identifiers in localStorage.
+
+Ensure the middleware, if used, is only a routing optimization and that sensitive server handlers independently verify sessions and authorization.
+F. Authorization model
+This is a single-hospital system, not a multi-tenant SaaS application.
+
+Create a granular permission model with roles such as:
+- Hospital Administrator.
+- Medical Director.
+- Doctor.
+- Nurse.
+- Receptionist.
+- Laboratory Technician.
+- Laboratory Supervisor.
+- Radiologist.
+- Pharmacist.
+- Cashier.
+- Billing Officer.
+- Insurance Officer.
+- Inventory Officer.
+- HR Manager.
+- Accountant.
+- Auditor.
+- Patient.
+Use explicit permissions such as:
+- patients.read
+- patients.create
+- patients.update
+- clinical.read
+- clinical.create
+- clinical.sign
+- clinical.amend
+- laboratory.results.enter
+- laboratory.results.verify
+- laboratory.results.release
+- pharmacy.dispense
+- billing.invoices.create
+- billing.payments.record
+- billing.refunds.approve
+- inventory.stock.adjust
+- users.permissions.manage
+- audit.read
+Keep permission definitions in trusted application code or controlled configuration. Use trusted server-side records for dynamic assignments.
+
+Do not trust role values supplied by the browser or accept unrestricted role updates through Firestore.
+
+Implement a centralized authorization service that supports:
+- Permission checks.
+- Department restrictions where applicable.
+- Resource-level authorization.
+- Sensitive-operation reauthentication where appropriate.
+- Permission-denied responses.
+- Tests for both allowed and denied access.
+Only the initial bootstrap procedure may provision the first administrator. It must require trusted operator-controlled configuration and must not be exposed as a public registration endpoint.
+G. Firestore security foundation
+Start with restrictive, default-deny Firestore rules.
+
+Implement only the minimum explicitly justified client access. Sensitive records and administrative operations should use trusted backend services where appropriate.
+
+Rules must not grant broad access merely because a user is authenticated.
+
+Never use:
+- allow read, write: if true;
+- authenticated-user access to every document;
+- client-controlled administrator flags;
+- client-controlled ownership or permissions;
+- unrestricted collection listing.
+Remember that Firebase Admin SDK operations bypass Firestore Security Rules. Every trusted backend operation must verify the session, permissions, resource scope, input, and allowed state transition independently.
+
+For Cloud Storage:
+- Deny unauthorized reads and writes.
+- Restrict content types and file sizes where feasible.
+- Do not trust filename extensions.
+- Validate uploads on the trusted backend where necessary.
+- Require authorization before issuing downloads.
+- Never make clinical documents public.
+Configure App Check for supported services and document the development and production enforcement strategy. App Check is additional abuse protection, not a substitute for authorization.
+H. Audit foundation
+Create a structured audit service and a documented event schema.
+
+Capture relevant events for:
+- Login and logout.
+- Authentication failures.
+- Permission changes.
+- Patient record access where required.
+- Clinical record creation and amendment.
+- Result verification and release.
+- Billing adjustments.
+- Refund approvals.
+- File access and exports.
+- Administrative configuration changes.
+- Emergency access.
+Use appropriate actor identifiers, action, resource type, resource ID, timestamp, outcome, and justification where required.
+
+Avoid logging patient details, passwords, tokens, or secrets unnecessarily.
+
+Do not create an ordinary client-writable audit collection. Restrict audit writes to trusted backend code and configure appropriate access controls for underlying logs.
+
+Document how audit events will be protected against alteration and deletion by ordinary application administrators.
+I. Initial domain model
+Create documented TypeScript types and Zod schemas for:
+- HospitalSettings
+- Department
+- StaffProfile
+- Role
+- Permission
+- PermissionAssignment
+- Patient
+- Appointment
+- Encounter
+- AuditEvent
+- DocumentMetadata
+Do not implement all the business workflows yet. Establish consistent IDs, timestamps, validation, and authorization requirements.
+
+Use server-generated timestamps for authoritative records. Keep domain schemas independent of React components.
+J. Automated security tests
+Configure Firebase Local Emulator Suite and tests for:
+1. Unauthenticated users cannot access protected records.
+2. Ordinary staff cannot assign themselves administrator permissions.
+3. Receptionists cannot access unauthorized clinical records.
+4. Doctors cannot modify financial records without the required permission.
+5. Users cannot read records outside their permitted scope.
+6. Unauthorized users cannot download private documents.
+7. Client users cannot write privileged audit events.
+8. Invalid fields and protected-field changes are rejected.
+9. Revoked or expired sessions are rejected.
+10. Trusted backend endpoints reject unauthorized requests.
+Test server-side authorization separately because Admin SDK operations bypass Firestore Security Rules.
+
+Add lint, type-check, test, and build scripts to package.json.
+
+Do not weaken security rules to make tests pass.
+K. Environment and deployment
+Create a safe .env.example with placeholder values only.
+
+Document:
+- Required Firebase project configuration.
+- Authentication provider setup.
+- Firestore and Storage setup.
+- Emulator commands.
+- Initial administrator provisioning.
+- Vercel environment variables.
+- Firebase Functions deployment.
+- Secret management.
+- Production security-rule deployment.
+- Backup configuration requirements.
+Use separate Firebase projects for development, staging, and production.
+
+Do not use production credentials in development.
+
+Do not deploy to production automatically.
+L. Phase 1 completion criteria
+Phase 1 is complete only when:
+- The Next.js application builds.
+- TypeScript checks pass.
+- ESLint passes.
+- The application shell is functional.
+- Login and protected-route behavior are implemented or their missing configuration is explicitly documented.
+- Server-side session verification is implemented.
+- Authorization foundations exist.
+- Firestore and Storage rules are restrictive.
+- Security tests exist and the runnable tests pass.
+- Environment variables and setup instructions are documented.
+- No secrets are committed.
+- No real patient information is present.
+- docs/IMPLEMENTATION_STATUS.md accurately lists completed work, unverified assumptions, blockers, and next steps.
+Execute the relevant commands and inspect their actual results. Fix errors caused by your changes.
+
+Do not claim that penetration testing, healthcare compliance certification, production deployment, or full security verification has been completed.
+M. Required final report
+After implementation, report:
+1. Files created and modified.
+2. Architecture implemented.
+3. Authentication and authorization status.
+4. Security rules and audit status.
+5. Tests actually executed and their results.
+6. Build and lint results.
+7. Any configuration I must complete manually.
+8. Any known security limitations.
+9. The exact commands to run the project locally.
+10. The next implementation tasks for Phase 2.
+Begin by inspecting the current workspace and then implement Phase 1 directly in the project. Do not stop after producing a plan or a visual mockup.
+
+
+

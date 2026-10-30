@@ -1,0 +1,13 @@
+{
+  "name": "Careflow Hospital Operations",
+  "short_name": "Careflow",
+  "description": "Clinic and patient operations workspace",
+  "start_url": "/dashboard",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f7f9f8",
+  "theme_color": "#087c6b",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

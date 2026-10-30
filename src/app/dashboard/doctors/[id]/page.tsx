@@ -1,0 +1,13 @@
+import { CalendarDays, Clock3, Download, FileText, Star } from "lucide-react";
+import { doctors } from "@/components/data";
+
+export default async function DoctorProfile({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const doctor = doctors.find((item) => String(item.id) === id) ?? doctors[0];
+  return (
+    <>
+      <div className="page-heading"><div><p className="eyebrow">Doctor profile</p><h1>{doctor.name}</h1><p className="subtle">{doctor.specialty}</p></div><button className="btn btn-primary"><CalendarDays size={15} /> Book appointment</button></div>
+      <div className="profile-grid"><main className="profile-main"><section className="panel doctor-intro"><span className={`avatar doctor-avatar ${doctor.color}`}>{doctor.initials}<i className="status-dot" /></span><div><span className="availability">Available today</span><h2>{doctor.specialty}</h2><p><Star size={14} /> {doctor.rating} · 286 patient reviews</p><p className="doctor-bio">Dedicated cardiology consultant with 14 years of clinical experience in preventive care, ECG diagnostics, and complex cardiac follow-ups.</p></div></section><section className="panel detail-section"><div className="panel-head"><div><h2>Schedule</h2><p>October 2026</p></div><button className="link-btn">Edit schedule</button></div><div className="schedule-grid">{["Mon 09:00 - 15:00","Tue 09:00 - 15:00","Wed 09:00 - 15:00","Thu 10:00 - 16:00","Fri 09:00 - 15:00","Sat Closed"].map((item) => <div key={item}><Clock3 size={15} /><strong>{item}</strong></div>)}</div></section><section className="panel detail-section"><div className="panel-head"><div><h2>Certificates & documents</h2><p>Public credentials</p></div><button className="link-btn">Manage files</button></div>{["Cardiology Board Certification.pdf","Medical Degree.pdf","Clinical Experience Certificate.pdf"].map((file) => <div className="document-row" key={file}><span className="file-icon"><FileText size={17} /></span><span><strong>{file}</strong><small>Verified document</small></span><button aria-label={`Download ${file}`}><Download size={15} /></button></div>)}</section></main><aside className="profile-side"><section className="panel side-card"><h2>Consultation</h2><div className="fee-line"><strong>PKR {doctor.fee}</strong><span>per visit</span></div><p>{doctor.seats} seats available today</p><button className="btn btn-secondary full-btn">See available times</button></section><section className="panel side-card"><h2>Clinical focus</h2><div className="tag-list"><span>Preventive cardiology</span><span>ECG diagnostics</span><span>Hypertension</span><span>Heart failure</span></div></section></aside></div>
+    </>
+  );
+}

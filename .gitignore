@@ -1,0 +1,22 @@
+# Dependencies and build artifacts
+node_modules/
+.next/
+out/
+coverage/
+*.tsbuildinfo
+
+# Local secrets and environment configuration
+.env*
+!.env.example
+
+# Firebase local artifacts
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json

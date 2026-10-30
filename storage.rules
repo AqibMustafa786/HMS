@@ -1,0 +1,22 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    function isAdmin() { return request.auth != null && request.auth.token.admin == true; }
+    match /patients/{patientId}/{fileName} {
+      allow read, write: if isAdmin();
+      // Direct downloads/uploads remain restricted to trusted server operations
+      // until per-document ownership and file metadata rules are tested.
+    }
+    match /patientAvatars/{patientId}/{fileName} {
+      allow read: if isAdmin()
+        || (request.auth != null && firestore.get(/databases/(default)/documents/patients/$(patientId)).data.patientUid == request.auth.uid)
+        || (request.auth != null && firestore.get(/databases/(default)/documents/patients/$(patientId)).data.assignedDoctorUid == request.auth.uid);
+      allow write: if isAdmin()
+        || (request.auth != null && firestore.get(/databases/(default)/documents/patients/$(patientId)).data.patientUid == request.auth.uid)
+        || (request.auth != null && firestore.get(/databases/(default)/documents/patients/$(patientId)).data.assignedDoctorUid == request.auth.uid);
+    }
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
