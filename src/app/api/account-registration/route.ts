@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
         displayName: input.data.fullName,
         tenantId: process.env.FIREBASE_PROJECT_ID ?? "hms-careflow",
         branchIds: ["main"],
-        permissions: [],
+        permissions: ["appointments.read", "appointments.create", "documents.read"],
         role: "patient",
         status: "active",
         emailVerified: Boolean(claims.email_verified),

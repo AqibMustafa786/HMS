@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
           email: String(claims.email ?? "").toLowerCase(),
           tenantId: process.env.FIREBASE_PROJECT_ID ?? "hms-careflow",
           branchIds: ["main"],
-          permissions: [],
+          permissions: ["appointments.read", "appointments.create", "documents.read"],
           role: "patient",
           status: "active",
           emailVerified: true,

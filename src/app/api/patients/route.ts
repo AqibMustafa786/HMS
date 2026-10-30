@@ -29,6 +29,33 @@ async function getPrincipal() {
   return resolveTrustedPrincipal(cookieStore.get("__session")?.value ?? "");
 }
 
+export async function GET() {
+  const principal = await getPrincipal();
+  if (!principal) return NextResponse.json({ error: "Authentication required." }, { status: 401 });
+  const { db } = getFirebaseAdmin();
+  const snapshot = await db.collection("patients").where("tenantId", "==", principal.tenantId).get();
+  const isAdmin = principal.permissions.includes("*");
+  const patients = snapshot.docs
+    .filter((patient) => isAdmin || patient.data().assignedDoctorUid === principal.uid || patient.data().patientUid === principal.uid)
+    .map((patient) => {
+      const data = patient.data();
+      return {
+        id: patient.id,
+        givenName: data.givenName ?? "",
+        familyName: data.familyName ?? "",
+        dateOfBirth: data.dateOfBirth ?? null,
+        sex: data.sex ?? "unknown",
+        phone: isAdmin || data.patientUid === principal.uid ? data.phone ?? null : null,
+        email: isAdmin || data.patientUid === principal.uid ? data.email ?? null : null,
+        assignedDoctorUid: data.assignedDoctorUid ?? null,
+        lifecycleState: data.lifecycleState ?? "active",
+        createdAt: data.createdAt?.toDate?.().toISOString() ?? null,
+        updatedAt: data.updatedAt?.toDate?.().toISOString() ?? null,
+      };
+    });
+  return NextResponse.json({ patients });
+}
+
 export async function POST(request: NextRequest) {
   const principal = await getPrincipal();
   if (!principal) return NextResponse.json({ error: "Authentication required." }, { status: 401 });

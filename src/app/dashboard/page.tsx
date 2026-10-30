@@ -4,15 +4,33 @@ import { Activity, CalendarClock, ChevronRight, Clock3, ShieldCheck, Users } fro
 import Link from "next/link";
 import { patients } from "@/components/data";
 import { AppointmentDialog } from "@/components/appointment-dialog";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function DashboardPage() {
   const [scheduleTab, setScheduleTab] = useState("All visits");
+  const [role, setRole] = useState("");
+
+  useEffect(() => {
+    fetch("/api/profile").then(async (response) => {
+      const data = await response.json().catch(() => null) as { profile?: { role?: string } } | null;
+      setRole(data?.profile?.role ?? "");
+    }).catch(() => undefined);
+  }, []);
+
+  const isDoctor = role === "doctor";
+  const isPatient = role === "patient";
+  const portal = isDoctor ? "Doctor workspace" : isPatient ? "Patient portal" : "Clinic overview";
+  const heading = isDoctor ? "My clinical workspace" : isPatient ? "My care overview" : "Good morning";
+  const description = isDoctor
+    ? "Manage your assigned patients, schedule, and care conversations."
+    : isPatient
+      ? "View your appointments, doctors, documents, and care conversations."
+      : "Here is what is happening in your clinic today.";
   return (
     <>
       <div className="page-heading">
-        <div><p className="eyebrow">Clinic overview</p><h1>Good morning</h1><p className="subtle">Here is what is happening in your clinic today.</p></div>
-        <div className="heading-actions"><a className="btn btn-secondary" href="/dashboard/appointments">View schedule</a><AppointmentDialog /></div>
+        <div><p className="eyebrow">{portal}</p><h1>{heading}</h1><p className="subtle">{description}</p></div>
+        <div className="heading-actions"><a className="btn btn-secondary" href="/dashboard/appointments">{isPatient ? "My appointments" : "View schedule"}</a>{!isPatient && <AppointmentDialog />}</div>
       </div>
       <section className="command-strip" aria-label="Daily overview">
         <div><span className="command-icon"><Activity size={16} /></span><div><small>Appointments today</small><strong>0</strong><span>No visits scheduled</span></div></div>

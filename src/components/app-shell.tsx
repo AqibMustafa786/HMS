@@ -10,13 +10,27 @@ import { useEffect, useRef, useState } from "react";
 import { getFirebaseClient } from "@/lib/firebase/client";
 import { signOut } from "firebase/auth";
 
-const nav = [
+const adminNav = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
   { href: "/dashboard/appointments", label: "Appointments", icon: CalendarDays },
   { href: "/dashboard/patients", label: "Patients", icon: Users },
   { href: "/dashboard/doctors", label: "Doctors", icon: Stethoscope },
   { href: "/dashboard/messages", label: "Messages", icon: MessageCircle },
   { href: "/dashboard/documents", label: "Documents", icon: FileText },
+];
+const doctorNav = [
+  { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
+  { href: "/dashboard/appointments", label: "My schedule", icon: CalendarDays },
+  { href: "/dashboard/patients", label: "My patients", icon: Users },
+  { href: "/dashboard/messages", label: "Messages", icon: MessageCircle },
+  { href: "/dashboard/documents", label: "Documents", icon: FileText },
+];
+const patientNav = [
+  { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
+  { href: "/dashboard/appointments", label: "My appointments", icon: CalendarDays },
+  { href: "/dashboard/doctors", label: "Find doctors", icon: Stethoscope },
+  { href: "/dashboard/messages", label: "Messages", icon: MessageCircle },
+  { href: "/dashboard/documents", label: "My documents", icon: FileText },
 ];
 
 export function AppShell({ children }: Readonly<{ children: React.ReactNode }>) {
@@ -26,6 +40,12 @@ export function AppShell({ children }: Readonly<{ children: React.ReactNode }>) 
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const [profileName, setProfileName] = useState("HMS account");
   const [profileRole, setProfileRole] = useState("Signed in");
+  const roleName = profileRole.toLowerCase().replaceAll("_", " ");
+  const nav = roleName.includes("patient")
+    ? patientNav
+    : roleName.includes("doctor") || roleName.includes("pending")
+      ? doctorNav
+      : adminNav;
   useEffect(() => {
     fetch("/api/profile").then(async (response) => {
       if (!response.ok) return;

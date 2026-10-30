@@ -24,26 +24,34 @@ async function requireSuperadmin(uid: string) {
 export async function GET() {
   const cookieStore = await cookies();
   const principal = await resolveTrustedPrincipal(cookieStore.get("__session")?.value ?? "");
-  if (!principal || !await requireSuperadmin(principal.uid)) {
+  if (!principal) {
     return NextResponse.json({ error: "Authentication required." }, { status: 403 });
   }
   const { db } = getFirebaseAdmin();
-  const applications = await db.collection("pendingDoctorApplications")
-    .where("state", "==", "pending")
-    .get();
-  const sortedApplications = applications.docs.sort((left, right) => {
-    const leftTime = left.data().submittedAt?.toMillis?.() ?? 0;
-    const rightTime = right.data().submittedAt?.toMillis?.() ?? 0;
-    return rightTime - leftTime;
-  });
-  const doctors = await db.collection("users").where("role", "==", "doctor").get();
-  return NextResponse.json({
-    applications: sortedApplications.map((application) => ({
+  const current = await db.collection("users").doc(principal.uid).get();
+  const role = current.data()?.role;
+  const canManage = role === "superadmin";
+  if (role !== "superadmin" && role !== "admin" && role !== "doctor" && role !== "patient") {
+    return NextResponse.json({ error: "Permission denied." }, { status: 403 });
+  }
+  let applicationPayload: Array<Record<string, unknown>> = [];
+  if (canManage || role === "admin") {
+    const applications = await db.collection("pendingDoctorApplications").where("state", "==", "pending").get();
+    const sortedApplications = applications.docs.sort((left, right) => {
+      const leftTime = left.data().submittedAt?.toMillis?.() ?? 0;
+      const rightTime = right.data().submittedAt?.toMillis?.() ?? 0;
+      return rightTime - leftTime;
+    });
+    applicationPayload = sortedApplications.map((application) => ({
       uid: application.id,
       ...application.data(),
       submittedAt: application.data().submittedAt?.toDate?.().toISOString() ?? null,
       updatedAt: application.data().updatedAt?.toDate?.().toISOString() ?? null,
-    })),
+    }));
+  }
+  const doctors = await db.collection("users").where("role", "==", "doctor").get();
+  return NextResponse.json({
+    applications: applicationPayload,
     doctors: doctors.docs.map((doctor) => ({
       uid: doctor.id,
       ...doctor.data(),
@@ -101,7 +109,7 @@ export async function POST(request: NextRequest) {
       registrationNumber: application.data()?.registrationNumber ?? null,
       tenantId: principal.tenantId,
       branchIds: ["main"],
-      permissions: ["appointments.read", "appointments.write", "patients.read", "messages.write"],
+      permissions: ["appointments.read", "appointments.create", "appointments.write", "patients.read", "messages.write"],
       role: "doctor",
       status: "active",
       approvedBy: principal.uid,
