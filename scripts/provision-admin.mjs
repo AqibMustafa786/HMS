@@ -1,7 +1,8 @@
-import { applicationDefault, initializeApp } from "firebase-admin/app";
+import { initializeApp } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
 import { getFirestore } from "firebase-admin/firestore";
 import { readFileSync, existsSync } from "node:fs";
+import { getServerCredential } from "./firebase-admin-credential.mjs";
 
 if (existsSync(".env.local")) {
   for (const line of readFileSync(".env.local", "utf8").split(/\r?\n/)) {
@@ -15,11 +16,11 @@ const email = process.env.ADMIN_EMAIL ?? "aqib2k1@gmail.com";
 const projectId = process.env.FIREBASE_PROJECT_ID ?? "hms-careflow";
 const password = process.env.SUPERADMIN_PASSWORD;
 
-if (!process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+if (!process.env.GOOGLE_APPLICATION_CREDENTIALS && !process.env.FIREBASE_SERVICE_ACCOUNT_JSON) {
   console.log("Using Application Default Credentials. Run: gcloud auth application-default login");
 }
 
-initializeApp({ credential: applicationDefault(), projectId });
+initializeApp({ credential: getServerCredential(), projectId });
 const auth = getAuth();
 const db = getFirestore();
 let user;

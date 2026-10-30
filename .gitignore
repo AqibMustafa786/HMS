@@ -10,6 +10,8 @@ coverage/
 !.env.example
 *-firebase-adminsdk-*.json
 hms-service-account.json
+*serviceaccount*.json
+*service-account*.json
 
 # Firebase local artifacts
 .firebase/
