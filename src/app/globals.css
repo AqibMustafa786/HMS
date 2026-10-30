@@ -285,6 +285,15 @@ body {
 .profile-photo input { position:absolute; opacity:0; pointer-events:none; }
 .profile-photo i { position:absolute; right:2px; bottom:2px; width:22px; height:22px; display:grid; place-items:center; border-radius:50%; color:white; background:#087c6b; }
 
+.doctor-applications { margin-bottom:12px; }
+.application-list { display:grid; }
+.application-row { min-height:62px; display:grid; grid-template-columns:36px minmax(0,1fr) auto; align-items:center; gap:10px; padding:9px 12px; border-top:1px solid var(--line); }
+.application-row:first-child { border-top:0; }
+.application-row > div:not(.application-actions) { min-width:0; display:grid; gap:2px; }
+.application-row strong { font-size:11px; }
+.application-row small { overflow:hidden; color:#78847f; font-size:9px; text-overflow:ellipsis; white-space:nowrap; }
+.application-actions { display:flex; gap:6px; }
+
 /* High-density application shell. Keep operational information visible without large page margins. */
 .empty-state {
   min-height:150px;
@@ -347,6 +356,54 @@ body {
   .sidebar-bottom { border-top:1px solid #294139; padding-top:5px; }
   .profile-switcher { height:48px; margin-top:3px; border:0; color:#fff; background:transparent; }
   .profile-switcher strong { font-size:10px; }.profile-switcher small { color:#718b85; font-size:8px; }
+  .sidebar-bottom { position:relative; }
+  .account-menu {
+    position:absolute;
+    right:8px;
+    bottom:54px;
+    left:8px;
+    z-index:30;
+    display:grid;
+    overflow:hidden;
+    padding:4px;
+    border:1px solid #294139;
+    border-radius:7px;
+    background:#17312c;
+    box-shadow:0 8px 24px rgba(5,19,16,.24);
+  }
+  .account-menu a,.account-menu button {
+    height:32px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:0 9px;
+    border:0;
+    border-radius:5px;
+    color:#d9e5e2;
+    background:transparent;
+    font-size:10px;
+    text-decoration:none;
+  }
+  .account-menu a:hover,.account-menu button:hover { background:#23443d; color:#fff; }
+  .account-menu button { cursor:pointer; }
+  .registration-role {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:6px;
+    padding:3px;
+    border-radius:7px;
+    background:#eef2f1;
+  }
+  .registration-role button {
+    height:30px;
+    border:0;
+    border-radius:5px;
+    color:#697571;
+    background:transparent;
+    font-size:10px;
+    cursor:pointer;
+  }
+  .registration-role button.active { color:#087866; background:#fff; box-shadow:0 1px 4px rgba(25,55,48,.12); font-weight:700; }
   .workspace { background:#f3f5f4; }
   .topbar { height:56px; padding-inline:18px; background:#fff; }
   .searchbox { width:min(390px,40vw); height:30px; }

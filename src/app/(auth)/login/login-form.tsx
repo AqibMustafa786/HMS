@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-import { onAuthStateChanged, reload, createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword } from "firebase/auth";
+import { onAuthStateChanged, reload, createUserWithEmailAndPassword, sendEmailVerification, sendPasswordResetEmail, signInWithEmailAndPassword } from "firebase/auth";
 import { getFirebaseClient } from "@/lib/firebase/client";
 
 export function LoginForm() {
@@ -11,6 +11,7 @@ export function LoginForm() {
   const [pending, setPending] = useState(false);
   const [mode, setMode] = useState<"signin" | "create" | "verify">("signin");
   const [notice, setNotice] = useState("");
+  const [registrationRole, setRegistrationRole] = useState<"patient" | "doctor">("patient");
 
   const createSession = useCallback(async () => {
     const { auth } = getFirebaseClient();
@@ -141,12 +142,49 @@ export function LoginForm() {
       const { auth } = getFirebaseClient();
       const credential = await createUserWithEmailAndPassword(auth, String(form.get("email")), String(form.get("password")));
       await sendEmailVerification(credential.user);
+      const idToken = await credential.user.getIdToken();
+      const registrationResponse = await fetch("/api/account-registration", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          idToken,
+          role: registrationRole,
+          fullName: String(form.get("fullName") ?? "").trim(),
+          registrationNumber: registrationRole === "doctor" ? String(form.get("registrationNumber") ?? "").trim() : undefined,
+        }),
+      });
+      if (!registrationResponse.ok) {
+        const registrationError = await registrationResponse.json().catch(() => null) as { error?: string } | null;
+        throw new Error(registrationError?.error ?? "Unable to submit account registration.");
+      }
       setMode("verify");
-      setNotice("Account created. Check your email and verify the link before signing in.");
+      setNotice(registrationRole === "doctor"
+        ? "Registration submitted. Verify your email and wait for administrator approval."
+        : "Account created. Check your email and verify the link before signing in.");
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "Unable to create account.");
     } finally {
       setPending(false);
+    }
+  }
+
+  async function forgotPassword() {
+      const { auth } = getFirebaseClient();
+      const emailInput = document.querySelector<HTMLInputElement>('input[name="email"]');
+      const email = emailInput?.value.trim() ?? "";
+      if (!email) {
+        setError("Enter your email address first.");
+        return;
+      }
+      setPending(true);
+      try {
+        await sendPasswordResetEmail(auth, email);
+        setNotice("Password reset instructions were sent to your email.");
+        setError("");
+      } catch (reason) {
+        setError(reason instanceof Error ? reason.message : "Unable to send password reset email.");
+      } finally {
+        setPending(false);
     }
   }
 
@@ -162,9 +200,13 @@ export function LoginForm() {
         </div>
       ) : (
         <form className="auth-form" onSubmit={mode === "create" ? createAccount : handleSubmit}>
+          {mode === "create" && <label>Full name<input type="text" name="fullName" autoComplete="name" required /></label>}
+          {mode === "create" && <div className="registration-role"><button type="button" className={registrationRole === "patient" ? "active" : ""} onClick={() => setRegistrationRole("patient")}>Patient</button><button type="button" className={registrationRole === "doctor" ? "active" : ""} onClick={() => setRegistrationRole("doctor")}>Doctor</button></div>}
+          {mode === "create" && registrationRole === "doctor" && <label>Medical registration number<input name="registrationNumber" required /></label>}
           <label>Email address<input type="email" name="email" autoComplete="username" required /></label>
           <label>Password<input type="password" name="password" minLength={6} autoComplete={mode === "create" ? "new-password" : "current-password"} required /></label>
-          <div className="auth-options"><span>Verified hospital account</span><button className="link-btn" type="button">Forgot password?</button></div>
+          <div className="auth-options"><span>Verified hospital account</span>{mode === "signin" && <button className="link-btn" type="button" onClick={forgotPassword}>Forgot password?</button>}</div>
+          {notice && mode === "signin" && <p className="auth-demo-note" role="status">{notice}</p>}
           {error && <p className="auth-demo-note" role="alert">{error}</p>}
           <button className="btn btn-primary auth-submit" type="submit" disabled={pending}>{pending ? "Working..." : mode === "create" ? "Create verified account" : "Sign in"}</button>
           <button className="link-btn" type="button" onClick={() => { setMode(mode === "create" ? "signin" : "create"); setError(""); }}>{mode === "create" ? "I already have an account" : "Create an account"}</button>

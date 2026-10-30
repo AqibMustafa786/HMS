@@ -1,12 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
-  Bell, CalendarDays, ChevronDown, CircleHelp, FileText, LayoutDashboard,
+  Bell, CalendarDays, ChevronDown, CircleHelp, FileText, LayoutDashboard, LogOut,
   Menu, MessageCircle, Search, Settings, Stethoscope, Users, X,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { getFirebaseClient } from "@/lib/firebase/client";
+import { signOut } from "firebase/auth";
 
 const nav = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
@@ -19,7 +21,9 @@ const nav = [
 
 export function AppShell({ children }: Readonly<{ children: React.ReactNode }>) {
   const pathname = usePathname();
+  const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const [profileName, setProfileName] = useState("HMS account");
   const [profileRole, setProfileRole] = useState("Signed in");
   useEffect(() => {
@@ -32,6 +36,23 @@ export function AppShell({ children }: Readonly<{ children: React.ReactNode }>) 
   }, []);
   const initials = profileName.split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]?.toUpperCase()).join("") || "SA";
   const active = (href: string) => pathname === href || (href !== "/dashboard" && pathname.startsWith(href));
+  const loggingOut = useRef(false);
+
+  async function logout() {
+    if (loggingOut.current) return;
+    loggingOut.current = true;
+    try {
+      const { auth } = getFirebaseClient();
+      await Promise.all([
+        fetch("/api/session", { method: "DELETE", credentials: "same-origin" }),
+        signOut(auth),
+      ]);
+      router.replace("/login");
+      router.refresh();
+    } finally {
+      loggingOut.current = false;
+    }
+  }
 
   return (
     <div className="app-frame">
@@ -54,11 +75,17 @@ export function AppShell({ children }: Readonly<{ children: React.ReactNode }>) 
         <div className="sidebar-bottom">
           <Link href="/dashboard/help" className="nav-item"><CircleHelp size={17} /><span>Help center</span></Link>
           <Link href="/dashboard/settings" className={`nav-item ${active("/dashboard/settings") ? "active" : ""}`}><Settings size={17} /><span>Settings</span></Link>
-          <button className="profile-switcher">
+          <button className="profile-switcher" type="button" aria-expanded={accountMenuOpen} onClick={() => setAccountMenuOpen((open) => !open)}>
             <span className="avatar avatar-doctor">{initials}<span className="status-dot" /></span>
             <span><strong>{profileName}</strong><small>{profileRole}</small></span>
             <ChevronDown size={15} />
           </button>
+          {accountMenuOpen && (
+            <div className="account-menu">
+              <Link href="/dashboard/settings" onClick={() => setAccountMenuOpen(false)}>Account settings</Link>
+              <button type="button" onClick={logout}><LogOut size={14} /> Log out</button>
+            </div>
+          )}
         </div>
       </aside>
       {mobileOpen && <button className="sidebar-backdrop" onClick={() => setMobileOpen(false)} aria-label="Close navigation" />}

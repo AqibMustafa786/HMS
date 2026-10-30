@@ -48,6 +48,10 @@ export async function POST(request: NextRequest) {
           updatedAt: new Date(),
         });
       }
+      const registration = await userRef.get();
+      if (registration.data()?.role === "pending_doctor" || registration.data()?.status === "pending") {
+        return NextResponse.json({ error: "Doctor registration is awaiting administrator approval." }, { status: 403 });
+      }
     }
     const cookie = await auth.createSessionCookie(parsed.data.idToken, { expiresIn: 12 * 60 * 60 * 1000 });
     const principal = await resolveTrustedPrincipal(cookie);
