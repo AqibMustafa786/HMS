@@ -4,7 +4,10 @@ import { ProfilePhoto } from "@/components/profile-photo";
 
 export default async function PatientProfile({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const patient = patients.find((item) => item.id === id) ?? patients[0];
+  const patient = patients.find((item) => item.id === id);
+  if (!patient) {
+    return <section className="panel empty-state"><h1>Patient not found</h1><p>This patient does not exist or you do not have access to it.</p></section>;
+  }
   return (
     <>
       <div className="breadcrumbs">Patients <ChevronRight size={13} /> {patient.name}</div>

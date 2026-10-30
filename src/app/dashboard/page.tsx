@@ -1,17 +1,16 @@
-import { ArrowUpRight, CalendarClock, ChevronRight, Clock3, MoreHorizontal, Plus, Users } from "lucide-react";
+import { ArrowUpRight, CalendarClock, ChevronRight, Clock3, Plus, Users } from "lucide-react";
 import Link from "next/link";
 import { patients } from "@/components/data";
 
 const stats = [
-  { label: "Today's appointments", value: "28", note: "8 remaining", change: "+12%", icon: CalendarClock, tone: "blue" },
-  { label: "My patients", value: "142", note: "10 new this week", change: "+8%", icon: Users, tone: "violet" },
-  { label: "Average wait time", value: "18 min", note: "Good today", change: "-4 min", icon: Clock3, tone: "amber" },
+  { label: "Today's appointments", value: "0", note: "No visits scheduled", change: "0", icon: CalendarClock, tone: "blue" },
+  { label: "My patients", value: "0", note: "No patients assigned", change: "0", icon: Users, tone: "violet" },
+  { label: "Average wait time", value: "--", note: "No completed visits", change: "--", icon: Clock3, tone: "amber" },
 ];
 
 export default function DashboardPage() {
   return (
     <>
-      <div className="demo-banner"><span>DEMO</span> Fictional development data. No live hospital activity is shown.</div>
       <div className="page-heading">
         <div><p className="eyebrow">Friday, October 30</p><h1>Good morning, Ayesha</h1><p className="subtle">Here is what is happening in your clinic today.</p></div>
         <div className="heading-actions"><button className="btn btn-secondary">View schedule</button><button className="btn btn-primary"><Plus size={15} /> New appointment</button></div>
@@ -25,11 +24,7 @@ export default function DashboardPage() {
         <article className="panel schedule-panel">
           <div className="panel-head"><div><h2>Today&apos;s schedule</h2><p>28 appointments · 3 rooms</p></div><button className="link-btn">View all <ChevronRight size={14} /></button></div>
           <div className="schedule-tabs"><button className="selected">All visits <span>28</span></button><button>Checked in <span>6</span></button><button>Completed <span>14</span></button></div>
-          <div className="timeline">
-            {[["09:00","Hamza Tariq","Initial consultation","In room 2","HT","blue","Checked in"],["09:30","Sara Khan","Cardiac follow-up","In room 1","SK","violet","In consultation"],["10:15","Bilal Ahmed","ECG review","Waiting","BA","amber","Next"],["11:00","Amina Raza","Routine check-up","Waiting","AR","rose","Upcoming"]].map(([time,name,reason,location,initials,color,status], index) => (
-              <div className="timeline-item" key={name}><time>{time}</time><span className={`timeline-dot ${index === 1 ? "active" : ""}`} /><Link href="/dashboard/patients/PT-1048" className="appointment-row"><span className={`avatar ${color}`}>{initials}</span><span className="appointment-name"><strong>{name}</strong><small>{reason}</small></span><span className="room-label"><i />{location}</span><span className={`visit-status status-${status.toLowerCase().replace(" ","-")}`}>{status}</span><button aria-label="More actions"><MoreHorizontal size={16} /></button></Link></div>
-            ))}
-          </div>
+          <div className="empty-state"><CalendarClock size={22} /><strong>No visits scheduled today</strong><small>Appointments will appear as they are booked.</small></div>
         </article>
         <aside className="panel activity-panel">
           <div className="panel-head"><div><h2>Recent patients</h2><p>Latest visits</p></div><Link href="/dashboard/patients" className="link-btn">See all</Link></div>

@@ -1,7 +1,19 @@
-# Data model status
+# Data model
 
-No clinical, patient, financial, staff, or tenant collections are enabled yet. This is deliberate: data collections and query indexes must not precede the tenant and authorization design.
+The Firestore database is initialized by `npm run firebase:init`. It does not create
+fictional business records.
 
-When introduced, each entity specification must document fields and types, required values, tenant/branch ownership, relationships, lifecycle transitions, query patterns/indexes, retention, and audit requirements. Use bounded documents rather than unbounded history arrays. Authoritative IDs and timestamps must be assigned by trusted backend operations.
+Operational collections are tenant-scoped and are created by trusted server operations:
 
-Initial planned domains include tenants, branches, users, permission assignments, departments, patients, encounters, appointments, audit events, and documents. This list is a roadmap, not an implemented schema.
+- `users`: Firebase UID-indexed identity and role assignments.
+- `tenants` / `branches`: organization and facility configuration.
+- `patients` / `patientKeys`: patient records and collision-resistant identity indexes.
+- `departments`, `doctorProfiles`, `availability`: staff profiles and scheduling.
+- `appointments`, `encounters`: visit lifecycle and clinical encounters.
+- `patientDocuments`: metadata for files stored in Cloud Storage.
+- `conversations`, `messages`: doctor-patient conversations.
+- `presence`, `notifications`: real-time status and delivery inboxes.
+- `auditEvents`: append-only administrative and clinical audit trail.
+
+Collection contracts are registered in `_collectionSchemas`. Schema metadata is
+administrative configuration, not medical or operational dummy data.

@@ -3,7 +3,10 @@ import { doctors } from "@/components/data";
 
 export default async function DoctorProfile({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const doctor = doctors.find((item) => String(item.id) === id) ?? doctors[0];
+  const doctor = doctors.find((item) => String(item.id) === id);
+  if (!doctor) {
+    return <section className="panel empty-state"><h1>Doctor not found</h1><p>This profile does not exist or has not been published.</p></section>;
+  }
   return (
     <>
       <div className="page-heading"><div><p className="eyebrow">Doctor profile</p><h1>{doctor.name}</h1><p className="subtle">{doctor.specialty}</p></div><button className="btn btn-primary"><CalendarDays size={15} /> Book appointment</button></div>

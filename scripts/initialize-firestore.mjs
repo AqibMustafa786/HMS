@@ -25,7 +25,11 @@ const db = getFirestore(app);
 const email = process.env.ADMIN_EMAIL ?? "aqib2k1@gmail.com";
 
 const user = await auth.getUserByEmail(email);
-await db.collection("users").doc(user.uid).set({
+const now = FieldValue.serverTimestamp();
+const batch = db.batch();
+
+const superadminRef = db.collection("users").doc(user.uid);
+batch.set(superadminRef, {
   uid: user.uid,
   email: user.email ?? email,
   emailVerified: user.emailVerified,
@@ -34,8 +38,50 @@ await db.collection("users").doc(user.uid).set({
   branchIds: ["main"],
   permissions: ["*"],
   status: "active",
-  createdAt: FieldValue.serverTimestamp(),
-  updatedAt: FieldValue.serverTimestamp(),
+  createdAt: now,
+  updatedAt: now,
 }, { merge: true });
 
-console.log(`Initialized users collection and superadmin document: users/${user.uid}`);
+batch.set(db.collection("tenants").doc(projectId), {
+  tenantId: projectId,
+  name: "Careflow HMS",
+  status: "active",
+  plan: "enterprise",
+  defaultTimezone: "Asia/Karachi",
+  defaultLocale: "en-PK",
+  createdAt: now,
+  updatedAt: now,
+}, { merge: true });
+
+const collections = {
+  users: ["uid", "email", "role", "tenantId", "status", "createdAt", "updatedAt"],
+  tenants: ["tenantId", "name", "status", "defaultTimezone", "defaultLocale", "createdAt", "updatedAt"],
+  patients: ["patientId", "publicPatientId", "tenantId", "identityKeyHash", "status", "createdAt", "updatedAt", "createdByUid"],
+  patientKeys: ["keyHash", "tenantId", "patientDocumentId", "createdAt"],
+  departments: ["departmentId", "tenantId", "name", "status", "createdAt", "updatedAt"],
+  doctorProfiles: ["doctorUid", "tenantId", "departmentId", "displayName", "specialties", "feeMinor", "currency", "status", "createdAt", "updatedAt"],
+  appointments: ["appointmentId", "tenantId", "patientUid", "patientId", "doctorUid", "startsAt", "status", "createdAt", "createdByUid", "updatedAt"],
+  encounters: ["encounterId", "tenantId", "patientId", "doctorUid", "appointmentId", "startedAt", "status", "createdAt", "updatedAt"],
+  availability: ["availabilityId", "tenantId", "doctorUid", "date", "startsAt", "endsAt", "capacity", "bookedCount", "status"],
+  patientDocuments: ["documentId", "tenantId", "patientId", "storagePath", "category", "mimeType", "sizeBytes", "uploadedByUid", "createdAt"],
+  conversations: ["conversationId", "tenantId", "patientId", "participantUids", "doctorUid", "status", "lastMessageAt", "createdAt"],
+  messages: ["messageId", "tenantId", "conversationId", "senderUid", "messageType", "body", "sentAt", "deliveryStatus"],
+  presence: ["uid", "tenantId", "state", "lastSeenAt"],
+  auditEvents: ["eventId", "tenantId", "actorUid", "action", "entityType", "entityId", "metadata", "createdAt"],
+  notifications: ["notificationId", "tenantId", "recipientUid", "type", "title", "readAt", "createdAt"],
+};
+
+for (const [collectionName, fields] of Object.entries(collections)) {
+  batch.set(db.collection("_collectionSchemas").doc(collectionName), {
+    collection: collectionName,
+    version: 1,
+    fields,
+    tenantScoped: !["users", "_collectionSchemas"].includes(collectionName),
+    createdAt: now,
+    updatedAt: now,
+  }, { merge: true });
+}
+
+await batch.commit();
+console.log(`Initialized tenant, users collection, and schema registry for ${projectId}`);
+console.log(`Superadmin: users/${user.uid}`);

@@ -10,7 +10,7 @@ import { useState } from "react";
 
 const nav = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
-  { href: "/dashboard/appointments", label: "Appointments", icon: CalendarDays, badge: "8" },
+  { href: "/dashboard/appointments", label: "Appointments", icon: CalendarDays },
   { href: "/dashboard/patients", label: "Patients", icon: Users },
   { href: "/dashboard/doctors", label: "Doctors", icon: Stethoscope },
   { href: "/dashboard/messages", label: "Messages", icon: MessageCircle, badge: "3" },
@@ -45,7 +45,7 @@ export function AppShell({ children }: Readonly<{ children: React.ReactNode }>) 
           <Link href="/dashboard/settings" className={`nav-item ${active("/dashboard/settings") ? "active" : ""}`}><Settings size={17} /><span>Settings</span></Link>
           <button className="profile-switcher">
             <span className="avatar avatar-doctor">AM<span className="status-dot" /></span>
-            <span><strong>Dr. Ayesha Malik</strong><small>Cardiology</small></span>
+            <span><strong>HMS account</strong><small>Signed in</small></span>
             <ChevronDown size={15} />
           </button>
         </div>
