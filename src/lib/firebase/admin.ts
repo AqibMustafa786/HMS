@@ -11,13 +11,17 @@ function getAdminApp() {
   if (serviceAccountJson) {
     let serviceAccount;
     try {
-      const escapedNewlines = serviceAccountJson.replace(
-        /("private_key"\s*:\s*")([\s\S]*?)("(?=\s*,))/g,
-        (_match, opening, key, closing) => `${opening}${key.replace(/\r?\n/g, "\\n")}${closing}`,
-      );
-      serviceAccount = JSON.parse(escapedNewlines.trim().replace(/\\n/g, "\n"));
+      serviceAccount = JSON.parse(serviceAccountJson.trim());
     } catch {
-      throw new Error("FIREBASE_SERVICE_ACCOUNT_JSON is invalid JSON.");
+      try {
+        const escapedPrivateKey = serviceAccountJson.replace(
+          /("private_key"\s*:\s*")([\s\S]*?)("(?=\s*,))/g,
+          (_match, opening, key, closing) => `${opening}${key.replace(/\r?\n/g, "\\n")}${closing}`,
+        );
+        serviceAccount = JSON.parse(escapedPrivateKey.trim());
+      } catch {
+        throw new Error("FIREBASE_SERVICE_ACCOUNT_JSON is invalid JSON.");
+      }
     }
     if (!serviceAccount.project_id || !serviceAccount.client_email || !serviceAccount.private_key) {
       throw new Error("FIREBASE_SERVICE_ACCOUNT_JSON is missing project_id, client_email, or private_key.");

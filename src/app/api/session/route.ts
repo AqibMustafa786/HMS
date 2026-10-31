@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
     return response;
   } catch (error) {
     const message = error instanceof Error ? error.message : "";
-    if (/FIREBASE_SERVICE_ACCOUNT_JSON|project_id|credentials/i.test(message)) {
+    if (/FIREBASE_SERVICE_ACCOUNT_JSON|project_id|credentials|private key|service account/i.test(message)) {
       console.error("Server authentication configuration error:", message);
       return NextResponse.json({ error: "Server authentication is not configured correctly.", code: "SERVER_AUTH_CONFIG" }, { status: 503 });
     }

@@ -26,6 +26,9 @@ Use one complete JSON object from a newly rotated service account as the value o
 `FIREBASE_SERVICE_ACCOUNT_JSON`. Store it in the Vercel dashboard as a sensitive
 encrypted environment variable; never commit it or put it in client code.
 
+Paste the Firebase service-account JSON unchanged. Do not wrap it in quotes, and
+do not replace the private key's escaped `\n` sequences with spaces or real newlines.
+
 In the Firebase console, add the exact Vercel hostname
 (`hospital-management-system-three-chi.vercel.app`) to Authentication > Settings >
 Authorized domains. Environment variable changes require a new Vercel deployment.
