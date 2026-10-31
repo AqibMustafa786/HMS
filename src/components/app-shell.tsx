@@ -5,19 +5,27 @@ import { usePathname, useRouter } from "next/navigation";
 import {
   Bell, CalendarDays, ChevronDown, CircleHelp, FileText, LayoutDashboard, LogOut,
   Menu, MessageCircle, Search, Settings, Stethoscope, Users, X, ClipboardList,
-  FlaskConical, Pill, PanelLeftClose, PanelLeftOpen,
+  FlaskConical, Pill, PanelLeftClose, PanelLeftOpen, BedDouble, Building2, CreditCard,
+  Package, ShieldCheck, BarChart3, ClipboardCheck, HeartPulse,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { getFirebaseClient } from "@/lib/firebase/client";
 import { signOut } from "firebase/auth";
 
 const adminNav = [
-  { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
-  { href: "/dashboard/appointments", label: "Appointments", icon: CalendarDays },
-  { href: "/dashboard/patients", label: "Patients", icon: Users },
-  { href: "/dashboard/doctors", label: "Doctors", icon: Stethoscope },
-  { href: "/dashboard/messages", label: "Messages", icon: MessageCircle },
-  { href: "/dashboard/documents", label: "Documents", icon: FileText },
+  { href: "/dashboard", label: "Overview", icon: LayoutDashboard, group: "Hospital" },
+  { href: "/dashboard/appointments", label: "Appointments", icon: CalendarDays, group: "Hospital" },
+  { href: "/dashboard/patients", label: "Patients", icon: Users, group: "Hospital" },
+  { href: "/dashboard/doctors", label: "Doctors & staff", icon: Stethoscope, group: "Hospital" },
+  { href: "/dashboard/appointments?view=wards", label: "Wards & beds", icon: BedDouble, group: "Clinical" },
+  { href: "/dashboard/prescriptions", label: "Pharmacy", icon: Pill, group: "Clinical" },
+  { href: "/dashboard/laboratory-results", label: "Laboratory", icon: FlaskConical, group: "Clinical" },
+  { href: "/dashboard/patients?view=departments", label: "Departments", icon: Building2, group: "Clinical" },
+  { href: "/dashboard/appointments?view=billing", label: "Billing & payments", icon: CreditCard, group: "Finance" },
+  { href: "/dashboard/appointments?view=insurance", label: "Insurance", icon: ShieldCheck, group: "Finance" },
+  { href: "/dashboard/documents?view=inventory", label: "Inventory", icon: Package, group: "Operations" },
+  { href: "/dashboard/documents?view=reports", label: "Reports & analytics", icon: BarChart3, group: "Operations" },
+  { href: "/dashboard/settings", label: "Audit & settings", icon: ClipboardCheck, group: "Administration" },
 ];
 const doctorNav = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard, group: "Workspace" },
@@ -37,6 +45,37 @@ const patientNav = [
   { href: "/dashboard/documents", label: "My documents", icon: FileText },
 ];
 
+const receptionistNav = [
+  { href: "/dashboard", label: "Overview", icon: LayoutDashboard, group: "Front desk" },
+  { href: "/dashboard/appointments", label: "Appointments", icon: CalendarDays, group: "Front desk" },
+  { href: "/dashboard/patients", label: "Patient registration", icon: Users, group: "Front desk" },
+  { href: "/dashboard/messages", label: "Messages", icon: MessageCircle, group: "Front desk" },
+];
+const nurseNav = [
+  { href: "/dashboard", label: "Overview", icon: LayoutDashboard, group: "Nursing" },
+  { href: "/dashboard/patients", label: "Assigned patients", icon: Users, group: "Nursing" },
+  { href: "/dashboard/clinical-records", label: "Observations & vitals", icon: HeartPulse, group: "Nursing" },
+  { href: "/dashboard/messages", label: "Messages", icon: MessageCircle, group: "Nursing" },
+];
+const pharmacistNav = [
+  { href: "/dashboard", label: "Overview", icon: LayoutDashboard, group: "Pharmacy" },
+  { href: "/dashboard/prescriptions", label: "Dispensing queue", icon: Pill, group: "Pharmacy" },
+  { href: "/dashboard/documents?view=inventory", label: "Medicine inventory", icon: Package, group: "Pharmacy" },
+  { href: "/dashboard/messages", label: "Messages", icon: MessageCircle, group: "Pharmacy" },
+];
+const labNav = [
+  { href: "/dashboard", label: "Overview", icon: LayoutDashboard, group: "Laboratory" },
+  { href: "/dashboard/laboratory-results", label: "Samples & results", icon: FlaskConical, group: "Laboratory" },
+  { href: "/dashboard/patients", label: "Patient references", icon: Users, group: "Laboratory" },
+  { href: "/dashboard/messages", label: "Messages", icon: MessageCircle, group: "Laboratory" },
+];
+const accountantNav = [
+  { href: "/dashboard", label: "Overview", icon: LayoutDashboard, group: "Finance" },
+  { href: "/dashboard/appointments?view=billing", label: "Billing & payments", icon: CreditCard, group: "Finance" },
+  { href: "/dashboard/appointments?view=insurance", label: "Insurance", icon: ShieldCheck, group: "Finance" },
+  { href: "/dashboard/documents?view=reports", label: "Revenue reports", icon: BarChart3, group: "Finance" },
+];
+
 export function AppShell({ children }: Readonly<{ children: React.ReactNode }>) {
   const pathname = usePathname();
   const router = useRouter();
@@ -53,9 +92,19 @@ export function AppShell({ children }: Readonly<{ children: React.ReactNode }>) 
   const roleName = profileRole.toLowerCase().replaceAll("_", " ");
   const nav = roleName.includes("patient")
     ? patientNav
-    : roleName.includes("doctor") || roleName.includes("pending")
+    : roleName.includes("doctor")
       ? doctorNav
-      : adminNav;
+      : roleName.includes("receptionist")
+        ? receptionistNav
+        : roleName.includes("nurse")
+          ? nurseNav
+          : roleName.includes("pharmacist")
+            ? pharmacistNav
+            : roleName.includes("lab")
+              ? labNav
+              : roleName.includes("accountant")
+                ? accountantNav
+                : adminNav;
   const searchItems = [
     ...nav,
     { href: "/dashboard/settings", label: "Settings", icon: Settings },
@@ -118,6 +167,11 @@ export function AppShell({ children }: Readonly<{ children: React.ReactNode }>) 
   const initials = profileName.split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]?.toUpperCase()).join("") || "SA";
   const active = (href: string) => pathname === href || (href !== "/dashboard" && pathname.startsWith(href));
   const loggingOut = useRef(false);
+  const pageLabel = pathname === "/dashboard"
+    ? "Overview"
+    : pathname.split("/").filter(Boolean).slice(1).map((part) => part.replaceAll("-", " ")).map((part) =>
+      part.replace(/\b\w/g, (letter) => letter.toUpperCase())
+    ).join(" / ");
 
   async function openNotifications() {
     if ("Notification" in window && Notification.permission === "default") {
@@ -165,7 +219,7 @@ export function AppShell({ children }: Readonly<{ children: React.ReactNode }>) 
         </div>
         {profileError && !collapsed && <button className="sidebar-profile-error" type="button" onClick={() => window.location.reload()}>Profile unavailable · Retry</button>}
         <nav className="main-nav" aria-label="Main navigation">
-          {["Workspace", "Clinical", "Hospital"].map((group) => {
+          {["Workspace", "Clinical", "Hospital", "Finance", "Operations", "Administration", "Front desk", "Nursing", "Pharmacy", "Laboratory"].map((group) => {
             const items = nav.filter((item) => ("group" in item ? item.group === group : group === "Hospital"));
             if (!items.length) return null;
             return <div className="nav-group" key={group}><div className="nav-label">{group}</div>{items.map(({ href, label, icon: Icon }) => (
@@ -196,6 +250,10 @@ export function AppShell({ children }: Readonly<{ children: React.ReactNode }>) 
       <main className="workspace">
         <header className="topbar">
           <button className="icon-btn menu-btn" onClick={() => setMobileOpen(true)} aria-label="Open menu"><Menu size={18} /></button>
+          <button className="icon-btn header-sidebar-toggle" type="button" onClick={() => setCollapsed((value) => !value)} aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}>
+            {collapsed ? <PanelLeftOpen size={17} /> : <PanelLeftClose size={17} />}
+          </button>
+          <div className="breadcrumb" aria-label="Breadcrumb"><span>HMS</span><b>/</b><strong>{pageLabel}</strong></div>
           <div className="global-search">
             <div className="searchbox"><Search size={16} /><input data-global-search aria-label="Search workspace" placeholder="Search workspace..." value={globalSearch} onFocus={() => setSearchOpen(true)} onChange={(event) => { setGlobalSearch(event.target.value); setSearchOpen(true); }} /><kbd>⌘ K</kbd></div>
             {searchOpen && (

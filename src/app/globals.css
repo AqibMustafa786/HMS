@@ -655,6 +655,83 @@ body {
     cursor:pointer;
   }
 }
+
+/* 2026 compact header and hospital command-center surfaces */
+.breadcrumb { min-width:150px; display:flex; align-items:center; gap:8px; color:#909a97; font-size:11px; }
+.breadcrumb strong { color:#35433f; font-weight:650; text-transform:none; }
+.breadcrumb b { font-weight:400; color:#cbd2cf; }
+.header-sidebar-toggle { display:none; }
+.hospital-kpis {
+  display:grid;
+  grid-template-columns:repeat(6,minmax(0,1fr));
+  gap:12px;
+  margin-bottom:12px;
+}
+.hospital-kpis > div {
+  min-height:82px;
+  padding:12px;
+  border:1px solid var(--line);
+  border-radius:7px;
+  background:#fff;
+}
+.hospital-kpis small,.hospital-kpis strong,.hospital-kpis span { display:block; }
+.hospital-kpis small { color:#7c8885; font-size:10px; font-weight:650; }
+.hospital-kpis strong { margin:7px 0 3px; font-size:22px; line-height:1; letter-spacing:-.5px; }
+.hospital-kpis span { color:#929b98; font-size:9px; }
+.hospital-command-grid {
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 284px;
+  grid-template-areas:"activity alerts" "records records";
+  gap:12px;
+}
+.operations-panel { grid-area:activity; min-height:280px; }
+.hospital-alerts { grid-area:alerts; }
+.hospital-records-panel { grid-area:records; }
+.schedule-empty-state { min-height:210px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px; color:#87918e; text-align:center; }
+.schedule-empty-state strong { color:#273431; font-size:12px; }
+.schedule-empty-state small { font-size:10px; }
+.hospital-activity-list > div { min-height:43px; display:grid; grid-template-columns:64px minmax(0,1fr) auto; align-items:center; gap:10px; padding:7px 12px; border-bottom:1px solid #eef1f0; }
+.hospital-activity-list > div:last-child { border-bottom:0; }
+.hospital-activity-list time { color:#596763; font-size:10px; font-weight:700; font-variant-numeric:tabular-nums; }
+.hospital-activity-list strong,.hospital-activity-list small { display:block; }
+.hospital-activity-list strong { font-size:11px; }
+.hospital-activity-list small { margin-top:2px; color:#89928f; font-size:9px; }
+.attention-list { display:grid; }
+.attention-list a { min-height:66px; display:grid; grid-template-columns:8px minmax(0,1fr) 14px; align-items:center; gap:9px; padding:10px 12px; border-bottom:1px solid #edf0ef; }
+.attention-list a:last-child { border-bottom:0; }
+.attention-list strong,.attention-list small { display:block; }
+.attention-list strong { font-size:11px; }
+.attention-list small { margin-top:2px; color:#89928f; font-size:9px; line-height:1.35; }
+.attention-dot { width:7px; height:7px; border-radius:50%; }
+.amber-dot { background:#d99a32; }.blue-dot { background:#4779b8; }.green-dot { background:#16845b; }
+.hospital-patient-table > div,.hospital-patient-table > a { display:grid; grid-template-columns:minmax(180px,1.5fr) minmax(130px,.8fr) minmax(100px,.6fr) 90px; align-items:center; gap:10px; min-height:38px; padding:0 12px; border-bottom:1px solid #eef1f0; }
+.hospital-patient-table > div { min-height:34px; color:#8a9491; font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; }
+.hospital-patient-table > a { font-size:10px; }
+.hospital-patient-table > a:last-child { border-bottom:0; }
+.hospital-patient-table > a > span:last-child { display:flex; align-items:center; justify-content:flex-end; gap:2px; color:#087f72; }
+
+@media (min-width:901px) {
+  .header-sidebar-toggle { display:grid; }
+  .topbar { gap:12px; }
+  .breadcrumb { flex:0 0 150px; }
+  .global-search { margin-left:auto; width:min(400px,34vw); }
+}
+@media (max-width:1180px) {
+  .hospital-kpis { grid-template-columns:repeat(3,minmax(0,1fr)); }
+}
+@media (max-width:900px) {
+  .breadcrumb { min-width:0; margin-right:auto; }
+  .breadcrumb span,.breadcrumb b { display:none; }
+  .header-sidebar-toggle { display:none; }
+  .hospital-kpis { grid-template-columns:repeat(3,minmax(0,1fr)); }
+  .hospital-command-grid { grid-template-columns:1fr; grid-template-areas:"activity" "alerts" "records"; }
+}
+@media (max-width:600px) {
+  .hospital-kpis { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .breadcrumb { display:none; }
+  .hospital-patient-table { overflow-x:auto; }
+  .hospital-patient-table > div,.hospital-patient-table > a { min-width:620px; }
+}
   .schedule-empty strong { display:block; font-size:12px; }
   .schedule-empty small { display:block; margin-top:3px; color:#919996; font-size:9px; }
   .availability-summary { min-height:118px; margin:10px; display:grid; grid-template-columns:52px 1fr; gap:9px; padding:10px; border-radius:6px; background:var(--console); color:white; }

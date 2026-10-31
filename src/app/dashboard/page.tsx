@@ -12,6 +12,7 @@ export default function DashboardPage() {
   const [role, setRole] = useState("");
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [patients, setPatients] = useState<Patient[]>([]);
+  const [doctors, setDoctors] = useState<Array<{ uid: string }>>([]);
   const [loading, setLoading] = useState(true);
   const [now, setNow] = useState<number | null>(null);
   const [profileError, setProfileError] = useState("");
@@ -25,15 +26,18 @@ export default function DashboardPage() {
       fetch("/api/profile", { cache: "no-store", signal: controller.signal }),
       fetch("/api/appointments", { cache: "no-store", signal: controller.signal }),
       fetch("/api/patients", { cache: "no-store", signal: controller.signal }),
+      fetch("/api/roles", { cache: "no-store", signal: controller.signal }),
     ])
-      .then(async ([profileResponse, appointmentsResponse, patientsResponse]) => {
+      .then(async ([profileResponse, appointmentsResponse, patientsResponse, rolesResponse]) => {
         const profileData = await profileResponse.json().catch(() => null) as { profile?: { role?: string } } | null;
         const appointmentData = await appointmentsResponse.json().catch(() => null) as { appointments?: Appointment[] } | null;
         const patientData = await patientsResponse.json().catch(() => null) as { patients?: Patient[] } | null;
+        const rolesData = await rolesResponse.json().catch(() => null) as { doctors?: Array<{ uid: string }> } | null;
         if (!profileResponse.ok || !profileData?.profile?.role) throw new Error("Profile unavailable");
         setRole(profileData?.profile?.role ?? "");
         setAppointments(appointmentData?.appointments ?? []);
         setPatients(patientData?.patients ?? []);
+        setDoctors(rolesData?.doctors ?? []);
       })
       .catch(() => setProfileError("Your workspace profile could not be loaded."))
       .finally(() => {
@@ -50,6 +54,7 @@ export default function DashboardPage() {
 
   const isDoctor = role === "doctor";
   const isPatient = role === "patient";
+  const isAdmin = role === "superadmin" || role === "hospital_admin";
   const today = new Date().toDateString();
   const todaysAppointments = useMemo(() => appointments.filter((appointment) =>
     appointment.startsAt && new Date(appointment.startsAt).toDateString() === today
@@ -73,7 +78,36 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {isDoctor ? (
+      {isAdmin ? (
+        <>
+          <section className="hospital-kpis" aria-label="Hospital overview">
+            <div><small>Total patients</small><strong>{loading ? "—" : patients.length}</strong><span>Accessible records</span></div>
+            <div><small>Today&apos;s appointments</small><strong>{loading ? "—" : todaysAppointments.length}</strong><span>Scheduled today</span></div>
+            <div><small>Active doctors</small><strong>{loading ? "—" : doctors.length}</strong><span>Approved directory</span></div>
+            <div><small>Available beds</small><strong>—</strong><span>Module not connected</span></div>
+            <div><small>Today&apos;s revenue</small><strong>—</strong><span>Billing data not connected</span></div>
+            <div><small>Pending payments</small><strong>—</strong><span>Billing data not connected</span></div>
+          </section>
+          <section className="hospital-command-grid">
+            <article className="panel operations-panel">
+              <div className="panel-head"><div><h2>Appointment activity</h2><p>Today&apos;s clinic schedule</p></div><Link href="/dashboard/appointments" className="link-btn">Open appointments <ChevronRight size={14} /></Link></div>
+              {loading ? <div className="clinical-loading">Loading activity…</div> : todaysAppointments.length === 0 ? <div className="schedule-empty-state"><CalendarDays size={20} /><strong>No appointments today</strong><small>New appointments will appear here.</small></div> : <div className="hospital-activity-list">{todaysAppointments.slice(0, 6).map((appointment) => <div key={appointment.appointmentId}><time>{appointment.startsAt ? new Date(appointment.startsAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "—"}</time><span><strong>{appointment.patientId}</strong><small>{appointment.reason}</small></span><b className={`workflow-status status-${appointment.state}`}>{appointment.state.replaceAll("-", " ")}</b></div>)}</div>}
+            </article>
+            <aside className="panel hospital-alerts">
+              <div className="panel-head"><div><h2>Operational attention</h2><p>Current exceptions</p></div></div>
+              <div className="attention-list">
+                <Link href="/dashboard/appointments"><span className="attention-dot amber-dot" /><span><strong>Appointments</strong><small>{appointments.filter((appointment) => appointment.state === "booked").length} booked visits require review</small></span><ChevronRight size={14} /></Link>
+                <Link href="/dashboard/doctors"><span className="attention-dot blue-dot" /><span><strong>Staff directory</strong><small>{doctors.length} approved doctors in directory</small></span><ChevronRight size={14} /></Link>
+                <Link href="/dashboard/patients"><span className="attention-dot green-dot" /><span><strong>Patient registrations</strong><small>{patients.length} records accessible</small></span><ChevronRight size={14} /></Link>
+              </div>
+            </aside>
+            <article className="panel hospital-records-panel">
+              <div className="panel-head"><div><h2>Recent patient registrations</h2><p>Latest accessible records</p></div><Link href="/dashboard/patients" className="link-btn">View patients <ChevronRight size={14} /></Link></div>
+              {loading ? <div className="clinical-loading">Loading registrations…</div> : patients.length === 0 ? <div className="schedule-empty-state"><Users size={20} /><strong>No patient records</strong><small>Registered patients will appear here.</small></div> : <div className="hospital-patient-table"><div><span>Patient</span><span>Identifier</span><span>Status</span><span>Action</span></div>{patients.slice(0, 7).map((patient) => <Link href={`/dashboard/patients/${patient.id}`} key={patient.id}><span><strong>{`${patient.givenName} ${patient.familyName}`.trim()}</strong></span><span>{patient.id}</span><span><b className="workflow-status">{patient.lifecycleState}</b></span><span>Open profile <ChevronRight size={13} /></span></Link>)}</div>}
+            </article>
+          </section>
+        </>
+      ) : isDoctor ? (
         <>
           <section className="clinical-metrics" aria-label="Clinical overview">
             <div><span className="metric-icon teal"><CalendarDays size={18} /></span><div><small>Today&apos;s appointments</small><strong>{loading ? "—" : todaysAppointments.length}</strong><span>{todaysAppointments.length ? "On today&apos;s schedule" : "No appointments today"}</span></div></div>

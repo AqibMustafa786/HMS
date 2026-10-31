@@ -30,6 +30,7 @@ export async function resolveTrustedPrincipal(sessionCookie: string): Promise<Tr
     if (!assignment.success) return null;
     const role = normalizeRole(assignment.data.role);
     if (!role) return null;
+    if (assignment.data.status !== "active") return null;
 
     return { uid, ...assignment.data, role };
   } catch {
