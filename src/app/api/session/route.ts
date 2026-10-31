@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getFirebaseAdmin } from "@/lib/firebase/admin";
 import { resolveTrustedPrincipal } from "@/lib/authorization/session";
+import { DEFAULT_ROLE_PERMISSIONS } from "@/lib/authorization/roles";
 
 const createSchema = z.object({ idToken: z.string().min(1).max(4096) });
 export const runtime = "nodejs";
@@ -23,7 +24,7 @@ export async function POST(request: NextRequest) {
       const assignment = {
         tenantId: process.env.FIREBASE_PROJECT_ID ?? "hms-careflow",
         branchIds: ["main"],
-        permissions: ["*"],
+        permissions: [...DEFAULT_ROLE_PERMISSIONS.superadmin],
         status: "active",
         email: superadminEmail,
         displayName: account.displayName || "Aqib Mustafa",
@@ -40,7 +41,7 @@ export async function POST(request: NextRequest) {
           email: String(claims.email ?? "").toLowerCase(),
           tenantId: process.env.FIREBASE_PROJECT_ID ?? "hms-careflow",
           branchIds: ["main"],
-          permissions: ["appointments.read", "appointments.create", "documents.read"],
+          permissions: [...DEFAULT_ROLE_PERMISSIONS.patient],
           role: "patient",
           status: "active",
           emailVerified: true,

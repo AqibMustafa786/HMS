@@ -11,7 +11,11 @@ function getAdminApp() {
   if (serviceAccountJson) {
     let serviceAccount;
     try {
-      serviceAccount = JSON.parse(serviceAccountJson.replace(/\\n/g, "\n"));
+      const escapedNewlines = serviceAccountJson.replace(
+        /("private_key"\s*:\s*")([\s\S]*?)("(?=\s*,))/g,
+        (_match, opening, key, closing) => `${opening}${key.replace(/\r?\n/g, "\\n")}${closing}`,
+      );
+      serviceAccount = JSON.parse(escapedNewlines.trim().replace(/\\n/g, "\n"));
     } catch {
       throw new Error("FIREBASE_SERVICE_ACCOUNT_JSON is invalid JSON.");
     }

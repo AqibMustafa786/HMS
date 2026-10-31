@@ -1,3 +1,5 @@
+import type { HmsRole } from "@/lib/authorization/roles";
+
 export type Permission = string;
 
 /** A verified, server-constructed identity and its trusted assignment context. */
@@ -7,6 +9,7 @@ export interface TrustedPrincipal {
   readonly branchIds: readonly string[];
   readonly permissions: readonly Permission[];
   readonly status: "active" | "disabled";
+  readonly role: HmsRole;
 }
 
 export interface ResourceScope {

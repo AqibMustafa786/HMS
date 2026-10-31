@@ -26,6 +26,18 @@ Use one complete JSON object from a newly rotated service account as the value o
 `FIREBASE_SERVICE_ACCOUNT_JSON`. Store it in the Vercel dashboard as a sensitive
 encrypted environment variable; never commit it or put it in client code.
 
+In the Firebase console, add the exact Vercel hostname
+(`hospital-management-system-three-chi.vercel.app`) to Authentication > Settings >
+Authorized domains. Environment variable changes require a new Vercel deployment.
+
+Before deploying, verify:
+
+- `FIREBASE_PROJECT_ID` exactly matches `project_id` in the service-account JSON.
+- `NEXT_PUBLIC_FIREBASE_PROJECT_ID` and `FIREBASE_PROJECT_ID` identify the same Firebase project.
+- The service-account JSON is valid JSON and includes `project_id`, `client_email`, and `private_key`.
+- The Vercel variables are enabled for the Production environment.
+- A production deployment has been created after adding or changing the variables.
+
 For local provisioning, set `GOOGLE_APPLICATION_CREDENTIALS` to an absolute path
 outside the repository instead.
 

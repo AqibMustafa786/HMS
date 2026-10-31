@@ -42,8 +42,16 @@ service cloud.firestore {
       match /messages/{messageId} {
         allow read, create: if isAdmin()
           || (signedIn() && request.auth.uid in get(/databases/$(database)/documents/conversations/$(conversationId)).data.participantUids);
-        allow update, delete: if isAdmin();
+        allow update: if isAdmin()
+          || (signedIn() && request.auth.uid in get(/databases/$(database)/documents/conversations/$(conversationId)).data.participantUids);
+        allow delete: if isAdmin();
       }
+    }
+
+    match /notifications/{notificationId} {
+      allow read, update: if signedIn() && (isAdmin() || resource.data.recipientUid == request.auth.uid);
+      allow create: if signedIn() || isAdmin();
+      allow delete: if isAdmin();
     }
 
     match /patientDocuments/{documentId} {

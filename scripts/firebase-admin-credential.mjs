@@ -6,7 +6,11 @@ export function getServerCredential() {
 
   let parsed;
   try {
-    parsed = JSON.parse(json.replace(/\\n/g, "\n"));
+    const escapedNewlines = json.replace(
+      /("private_key"\s*:\s*")([\s\S]*?)("(?=\s*,))/g,
+      (_match, opening, key, closing) => `${opening}${key.replace(/\r?\n/g, "\\n")}${closing}`,
+    );
+    parsed = JSON.parse(escapedNewlines.trim().replace(/\\n/g, "\n"));
   } catch {
     throw new Error("FIREBASE_SERVICE_ACCOUNT_JSON is not valid JSON.");
   }

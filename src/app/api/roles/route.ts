@@ -4,8 +4,9 @@ import { z } from "zod";
 import { FieldValue } from "firebase-admin/firestore";
 import { getFirebaseAdmin } from "@/lib/firebase/admin";
 import { resolveTrustedPrincipal } from "@/lib/authorization/session";
+import { DEFAULT_ROLE_PERMISSIONS, HMS_ROLES } from "@/lib/authorization/roles";
 
-const roleSchema = z.enum(["admin", "doctor", "patient"]);
+const roleSchema = z.enum([...HMS_ROLES]);
 const requestSchema = z.object({
   action: z.enum(["grant", "revoke", "approve", "reject"]),
   uid: z.string().trim().min(1).max(128),
@@ -74,8 +75,8 @@ export async function POST(request: NextRequest) {
 
   const input = requestSchema.safeParse(await request.json().catch(() => null));
   if (!input.success) return NextResponse.json({ error: "Invalid role request." }, { status: 400 });
-  if (input.data.role !== "admin" && input.data.action === "revoke" && input.data.uid === principal.uid) {
-    return NextResponse.json({ error: "Superadmins cannot be managed through another role." }, { status: 400 });
+  if (input.data.action !== "approve" && input.data.action !== "reject" && input.data.uid === principal.uid) {
+    return NextResponse.json({ error: "You cannot change your own role or status." }, { status: 400 });
   }
 
   const account = await auth.getUser(input.data.uid).catch(() => null);
@@ -109,7 +110,7 @@ export async function POST(request: NextRequest) {
       registrationNumber: application.data()?.registrationNumber ?? null,
       tenantId: principal.tenantId,
       branchIds: ["main"],
-      permissions: ["appointments.read", "appointments.create", "appointments.write", "patients.read", "messages.write"],
+      permissions: [...DEFAULT_ROLE_PERMISSIONS.doctor],
       role: "doctor",
       status: "active",
       approvedBy: principal.uid,
@@ -127,31 +128,33 @@ export async function POST(request: NextRequest) {
   }
 
   if (input.data.action === "revoke") {
-    delete claims[input.data.role];
-    if (input.data.role === "admin") {
-      delete claims.admin;
-      await auth.setCustomUserClaims(input.data.uid, claims);
-    } else {
-      claims.role = "user";
-      await auth.setCustomUserClaims(input.data.uid, claims);
+    const accountSnapshot = await db.collection("users").doc(input.data.uid).get();
+    const currentRole = accountSnapshot.data()?.role;
+    if (currentRole === "superadmin") {
+      return NextResponse.json({ error: "The superadmin account cannot be revoked here." }, { status: 400 });
     }
+    claims.role = currentRole ?? "patient";
+    claims.disabled = true;
+    await auth.setCustomUserClaims(input.data.uid, claims);
     await db.collection("users").doc(input.data.uid).set({
-      status: "active",
-      role: input.data.role === "admin" ? "user" : "user",
+      status: "disabled",
+      permissions: [],
       updatedAt: FieldValue.serverTimestamp(),
     }, { merge: true });
   } else {
+    const rolePermissions = DEFAULT_ROLE_PERMISSIONS[input.data.role];
     await db.collection("users").doc(input.data.uid).set({
       uid: input.data.uid,
       email: account.email ?? null,
       tenantId: principal.tenantId,
       role: input.data.role,
       status: "active",
+      permissions: [...rolePermissions],
       updatedAt: FieldValue.serverTimestamp(),
     }, { merge: true });
-    claims[input.data.role] = true;
-    if (input.data.role === "admin") claims.admin = true;
     claims.role = input.data.role;
+    claims.admin = input.data.role === "superadmin" || input.data.role === "hospital_admin";
+    claims.disabled = false;
     await auth.setCustomUserClaims(input.data.uid, claims);
   }
   return NextResponse.json({ ok: true, action: input.data.action, role: input.data.role, uid: input.data.uid });

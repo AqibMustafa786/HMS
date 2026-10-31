@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { FieldValue } from "firebase-admin/firestore";
 import { z } from "zod";
 import { getFirebaseAdmin } from "@/lib/firebase/admin";
+import { DEFAULT_ROLE_PERMISSIONS } from "@/lib/authorization/roles";
 
 const schema = z.object({
   idToken: z.string().min(1).max(4096),
@@ -30,7 +31,7 @@ export async function POST(request: NextRequest) {
         displayName: input.data.fullName,
         tenantId: process.env.FIREBASE_PROJECT_ID ?? "hms-careflow",
         branchIds: ["main"],
-        permissions: ["appointments.read", "appointments.create", "documents.read"],
+        permissions: [...DEFAULT_ROLE_PERMISSIONS.patient],
         role: "patient",
         status: "active",
         emailVerified: Boolean(claims.email_verified),
