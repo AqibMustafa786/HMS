@@ -1,17 +1,26 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { onAuthStateChanged, reload, createUserWithEmailAndPassword, sendEmailVerification, sendPasswordResetEmail, signInWithEmailAndPassword } from "firebase/auth";
 import { getFirebaseClient } from "@/lib/firebase/client";
 
 export function LoginForm() {
-  const router = useRouter();
   const [error, setError] = useState("");
   const [pending, setPending] = useState(false);
   const [mode, setMode] = useState<"signin" | "create" | "verify">("signin");
   const [notice, setNotice] = useState("");
   const [registrationRole, setRegistrationRole] = useState<"patient" | "doctor">("patient");
+  const redirected = useRef(false);
+
+  const enterDashboard = useCallback(() => {
+    if (redirected.current) return;
+    redirected.current = true;
+    window.setTimeout(() => {
+      // A full navigation ensures Next's router never receives actions during Firebase initialization.
+      // eslint-disable-next-line @next/next/no-location-assign-relative-destination
+      window.location.href = "/dashboard";
+    }, 0);
+  }, []);
 
   const createSession = useCallback(async () => {
     const { auth } = getFirebaseClient();
@@ -43,8 +52,7 @@ export function LoginForm() {
       await reload(auth.currentUser);
       if (auth.currentUser.emailVerified) {
         await createSession();
-        router.replace("/dashboard");
-        router.refresh();
+        enterDashboard();
         return;
       }
       await sendEmailVerification(auth.currentUser);
@@ -68,14 +76,13 @@ export function LoginForm() {
         return;
       }
       await createSession();
-      router.replace("/dashboard");
-      router.refresh();
+      enterDashboard();
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "Unable to complete verification.");
     } finally {
       setPending(false);
     }
-  }, [createSession, router]);
+  }, [createSession, enterDashboard]);
 
   useEffect(() => {
     const { auth } = getFirebaseClient();
@@ -91,13 +98,12 @@ export function LoginForm() {
       }
       try {
         await createSession();
-        router.replace("/dashboard");
-        router.refresh();
+        enterDashboard();
       } catch (reason) {
         setError(reason instanceof Error ? reason.message : "Unable to complete sign-in.");
       }
     });
-  }, [createSession, router]);
+  }, [createSession, enterDashboard]);
 
   useEffect(() => {
     if (mode !== "verify") return;
@@ -120,8 +126,7 @@ export function LoginForm() {
         return;
       }
       await createSession();
-      router.replace("/dashboard");
-      router.refresh();
+      enterDashboard();
     } catch (reason) {
       const message = reason instanceof Error ? reason.message : "Unable to sign in.";
       setError(message.includes("auth/")

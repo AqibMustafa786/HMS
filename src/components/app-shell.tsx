@@ -132,8 +132,11 @@ export function AppShell({ children }: Readonly<{ children: React.ReactNode }>) 
         fetch("/api/session", { method: "DELETE", credentials: "same-origin" }),
         signOut(auth),
       ]);
-      router.replace("/login");
-      router.refresh();
+      window.setTimeout(() => {
+        // Refresh the session cookie boundary without dispatching router actions during logout.
+        // eslint-disable-next-line @next/next/no-location-assign-relative-destination
+        window.location.href = "/login";
+      }, 0);
     } finally {
       loggingOut.current = false;
     }
