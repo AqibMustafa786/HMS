@@ -32,7 +32,7 @@ export async function GET() {
   const current = await db.collection("users").doc(principal.uid).get();
   const role = current.data()?.role;
   const canManage = role === "superadmin";
-  if (role !== "superadmin" && role !== "admin" && role !== "doctor" && role !== "patient") {
+  if (!["superadmin", "admin", "hospital_admin", "doctor", "patient", "receptionist"].includes(role)) {
     return NextResponse.json({ error: "Permission denied." }, { status: 403 });
   }
   let applicationPayload: Array<Record<string, unknown>> = [];
@@ -53,7 +53,7 @@ export async function GET() {
   const doctors = await db.collection("users").where("role", "==", "doctor").get();
   return NextResponse.json({
     applications: applicationPayload,
-    doctors: doctors.docs.map((doctor) => ({
+    doctors: doctors.docs.filter((doctor) => doctor.data().tenantId === principal.tenantId && doctor.data().status !== "disabled").map((doctor) => ({
       uid: doctor.id,
       ...doctor.data(),
       createdAt: doctor.data().createdAt?.toDate?.().toISOString() ?? null,
