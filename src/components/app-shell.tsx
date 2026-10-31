@@ -266,7 +266,7 @@ export function AppShell({ children }: Readonly<{ children: React.ReactNode }>) 
           </div>
           <div className="top-actions">
             <div className="sync-control">
-              <button type="button" className="sync-state" aria-expanded={syncOpen} onClick={() => setSyncOpen((open) => !open)}><span />Offline ready</button>
+              <button type="button" className="sync-state" aria-expanded={syncOpen} onClick={() => setSyncOpen((open) => !open)}><span />System online</button>
               {syncOpen && <div className="sync-menu">Workspace is available offline.<button type="button" onClick={() => setSyncOpen(false)}>Got it</button></div>}
             </div>
             <button className="icon-btn notification-btn" aria-label="Notifications" onClick={() => void openNotifications()}><Bell size={17} />{unreadNotifications > 0 && <i />}</button>

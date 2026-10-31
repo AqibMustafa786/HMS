@@ -844,3 +844,134 @@ body {
 .reaction-grid { height:190px; display:grid; grid-template-columns:repeat(7,1fr); align-content:start; gap:3px; overflow-y:auto; padding:0 10px 10px; }
 .reaction-grid button { width:30px; height:30px; border:0; border-radius:6px; background:white; font-size:19px; cursor:pointer; }
 .reaction-grid button:hover { background:#edf7f4; }
+
+/* Refined application command bar. Dense, restrained and aligned with the clinical shell. */
+.topbar {
+  height:64px;
+  grid-template-columns:auto auto minmax(260px, 560px) auto;
+  justify-content:initial;
+  gap:10px;
+  padding:0 18px;
+}
+.topbar .header-sidebar-toggle {
+  width:34px;
+  height:34px;
+  border-color:#e7ebe9;
+  border-radius:6px;
+}
+.breadcrumb {
+  position:absolute;
+  left:62px;
+  top:22px;
+  min-width:0;
+  pointer-events:none;
+  display:none;
+}
+.global-search {
+  width:min(520px, 42vw);
+  margin-left:auto;
+}
+.searchbox {
+  height:36px;
+  border-color:#e7ebe9;
+  border-radius:7px;
+  background:#f8faf9;
+  box-shadow:none;
+}
+.searchbox:focus-within {
+  border-color:#99c7bf;
+  background:#fff;
+  box-shadow:0 0 0 3px rgba(8,127,114,.07);
+}
+.searchbox kbd {
+  height:20px;
+  min-width:34px;
+  display:grid;
+  place-items:center;
+  padding:0;
+  border-color:#e5e9e7;
+  border-radius:5px;
+  font-family:inherit;
+}
+.top-actions {
+  height:36px;
+  gap:7px;
+  margin-left:0;
+}
+.sync-state {
+  height:34px;
+  padding:0 10px;
+  border:1px solid #e5e9e7;
+  border-radius:6px;
+  background:#fff;
+  font-size:10px;
+}
+.sync-state > span {
+  width:7px;
+  height:7px;
+  box-shadow:0 0 0 3px #eef7f3;
+  background:#25a76d;
+}
+.notification-btn {
+  width:34px;
+  height:34px;
+  border-radius:6px;
+}
+.avatar-button {
+  width:34px;
+  height:34px;
+  background:#dcefeb !important;
+}
+.sidebar {
+  overflow:hidden;
+}
+.sidebar .main-nav {
+  min-height:0;
+  overflow-y:auto;
+  scrollbar-width:none;
+}
+.sidebar .main-nav::-webkit-scrollbar {
+  display:none;
+}
+.nav-group {
+  flex:none;
+}
+.nav-label {
+  height:16px;
+  line-height:16px;
+  margin:7px 10px 3px;
+}
+.sidebar .nav-item {
+  min-height:32px;
+  flex:none;
+}
+.sidebar-bottom {
+  flex:none;
+  background:#102621;
+}
+.sidebar-bottom .nav-item {
+  color:#aec0bc;
+}
+.sidebar-bottom .profile-switcher {
+  background:#102621;
+  border-top-color:#294139;
+}
+
+@media (max-width:900px) {
+  .topbar {
+    height:56px;
+    grid-template-columns:34px minmax(0,1fr) auto;
+    gap:8px;
+    padding:0 10px;
+  }
+  .global-search {
+    width:auto;
+    margin-left:0;
+  }
+  .topbar .header-sidebar-toggle { display:none; }
+  .searchbox { height:36px; }
+  .searchbox kbd { display:none; }
+  .sync-control { display:none; }
+  .top-actions { margin-left:0; }
+  .top-actions .avatar-button { display:none; }
+}
