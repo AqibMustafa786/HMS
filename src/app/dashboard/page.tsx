@@ -3,7 +3,7 @@
 import { CalendarDays, ChevronRight, ClipboardCheck, FlaskConical, Users } from "lucide-react";
 import Link from "next/link";
 import { AppointmentDialog } from "@/components/appointment-dialog";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 type Appointment = { appointmentId: string; patientId: string; startsAt: string | null; reason: string; state: string };
 type Patient = { id: string; givenName: string; familyName: string; lifecycleState: string };
@@ -13,22 +13,40 @@ export default function DashboardPage() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [patients, setPatients] = useState<Patient[]>([]);
   const [loading, setLoading] = useState(true);
-  const [now, setNow] = useState(0);
+  const [now, setNow] = useState<number | null>(null);
+  const [profileError, setProfileError] = useState("");
 
-  useEffect(() => {
-    const clock = window.setTimeout(() => setNow(Date.now()), 0);
-    Promise.all([fetch("/api/profile"), fetch("/api/appointments"), fetch("/api/patients")])
+  const loadWorkspace = useCallback(async () => {
+    setLoading(true);
+    setProfileError("");
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 10000);
+    Promise.all([
+      fetch("/api/profile", { cache: "no-store", signal: controller.signal }),
+      fetch("/api/appointments", { cache: "no-store", signal: controller.signal }),
+      fetch("/api/patients", { cache: "no-store", signal: controller.signal }),
+    ])
       .then(async ([profileResponse, appointmentsResponse, patientsResponse]) => {
         const profileData = await profileResponse.json().catch(() => null) as { profile?: { role?: string } } | null;
         const appointmentData = await appointmentsResponse.json().catch(() => null) as { appointments?: Appointment[] } | null;
         const patientData = await patientsResponse.json().catch(() => null) as { patients?: Patient[] } | null;
+        if (!profileResponse.ok || !profileData?.profile?.role) throw new Error("Profile unavailable");
         setRole(profileData?.profile?.role ?? "");
         setAppointments(appointmentData?.appointments ?? []);
         setPatients(patientData?.patients ?? []);
       })
-      .finally(() => setLoading(false));
-    return () => window.clearTimeout(clock);
+      .catch(() => setProfileError("Your workspace profile could not be loaded."))
+      .finally(() => {
+        window.clearTimeout(timeout);
+        setLoading(false);
+        setNow(Date.now());
+      });
   }, []);
+
+  useEffect(() => {
+    const start = window.setTimeout(() => { void loadWorkspace(); }, 0);
+    return () => window.clearTimeout(start);
+  }, [loadWorkspace]);
 
   const isDoctor = role === "doctor";
   const isPatient = role === "patient";
@@ -37,7 +55,7 @@ export default function DashboardPage() {
     appointment.startsAt && new Date(appointment.startsAt).toDateString() === today
   ).sort((a, b) => new Date(a.startsAt ?? 0).getTime() - new Date(b.startsAt ?? 0).getTime()), [appointments, today]);
   const upcomingAppointments = useMemo(() => appointments.filter((appointment) =>
-    appointment.startsAt && new Date(appointment.startsAt).getTime() > now
+    appointment.startsAt && now !== null && new Date(appointment.startsAt).getTime() > now
   ).sort((a, b) => new Date(a.startsAt ?? 0).getTime() - new Date(b.startsAt ?? 0).getTime()).slice(0, 4), [appointments, now]);
   const completedAppointments = appointments.filter((appointment) => appointment.state === "completed").length;
 
@@ -100,8 +118,10 @@ export default function DashboardPage() {
             </article>
           </section>
         </>
+      ) : profileError ? (
+        <section className="workspace-error" role="alert"><div><strong>Workspace profile unavailable</strong><small>{profileError}</small></div><button type="button" className="btn btn-primary" onClick={() => void loadWorkspace()}>Retry</button></section>
       ) : (
-        <section className="clinical-workspace"><article className="panel schedule-panel"><div className="panel-head"><div><h2>Workspace</h2><p>Role-specific overview</p></div></div><div className="compact-empty"><strong>Loading workspace</strong><small>If this remains visible, refresh the page to load your role profile.</small></div></article></section>
+        <section className="clinical-workspace"><article className="panel schedule-panel"><div className="panel-head"><div><h2>Workspace</h2><p>{loading ? "Loading your role profile" : "Role profile unavailable"}</p></div></div><div className="compact-empty">{loading ? <><span className="route-spinner" /><strong>Loading workspace</strong></> : <><strong>Unable to determine workspace</strong><small>Retry to reconnect your role profile.</small><button type="button" className="btn btn-secondary" onClick={() => void loadWorkspace()}>Retry</button></>}</div></article></section>
       )}
     </>
   );

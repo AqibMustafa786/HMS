@@ -20,14 +20,14 @@ const adminNav = [
   { href: "/dashboard/documents", label: "Documents", icon: FileText },
 ];
 const doctorNav = [
-  { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
-  { href: "/dashboard/appointments", label: "My schedule", icon: CalendarDays },
-  { href: "/dashboard/patients", label: "My patients", icon: Users },
-  { href: "/dashboard/clinical-records", label: "Clinical records", icon: ClipboardList },
-  { href: "/dashboard/prescriptions", label: "Prescriptions", icon: Pill },
-  { href: "/dashboard/laboratory-results", label: "Laboratory results", icon: FlaskConical },
-  { href: "/dashboard/messages", label: "Messages", icon: MessageCircle },
-  { href: "/dashboard/documents", label: "Documents", icon: FileText },
+  { href: "/dashboard", label: "Overview", icon: LayoutDashboard, group: "Workspace" },
+  { href: "/dashboard/appointments", label: "Appointments", icon: CalendarDays, group: "Workspace" },
+  { href: "/dashboard/patients", label: "My patients", icon: Users, group: "Workspace" },
+  { href: "/dashboard/messages", label: "Messages", icon: MessageCircle, group: "Workspace" },
+  { href: "/dashboard/clinical-records", label: "Clinical records", icon: ClipboardList, group: "Clinical" },
+  { href: "/dashboard/prescriptions", label: "Prescriptions", icon: Pill, group: "Clinical" },
+  { href: "/dashboard/laboratory-results", label: "Laboratory results", icon: FlaskConical, group: "Clinical" },
+  { href: "/dashboard/documents", label: "Documents", icon: FileText, group: "Clinical" },
 ];
 const patientNav = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
@@ -49,6 +49,7 @@ export function AppShell({ children }: Readonly<{ children: React.ReactNode }>) 
   const [searchOpen, setSearchOpen] = useState(false);
   const [syncOpen, setSyncOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
+  const [profileError, setProfileError] = useState("");
   const roleName = profileRole.toLowerCase().replaceAll("_", " ");
   const nav = roleName.includes("patient")
     ? patientNav
@@ -63,12 +64,19 @@ export function AppShell({ children }: Readonly<{ children: React.ReactNode }>) 
     item.label.toLowerCase().includes(globalSearch.trim().toLowerCase())
   ).slice(0, 6);
   useEffect(() => {
-    fetch("/api/profile").then(async (response) => {
-      if (!response.ok) return;
-      const data = await response.json();
-      setProfileName(data.profile.displayName || data.profile.email || "HMS account");
-      setProfileRole(data.profile.role === "superadmin" ? "Super administrator" : data.profile.role || "Signed in");
-    }).catch(() => undefined);
+    let stopped = false;
+    fetch("/api/profile", { cache: "no-store" })
+      .then(async (response) => {
+        const data = await response.json().catch(() => null);
+        if (!response.ok || !data?.profile) throw new Error("Profile unavailable");
+        if (stopped) return;
+        setProfileName(data.profile.displayName || data.profile.email || "HMS account");
+        setProfileRole(data.profile.role === "superadmin" ? "Super administrator" : data.profile.role || "Signed in");
+      })
+      .catch(() => {
+        if (!stopped) setProfileError("Profile could not be loaded.");
+      });
+    return () => { stopped = true; };
   }, []);
   useEffect(() => {
     const shortcut = (event: KeyboardEvent) => {
@@ -155,16 +163,18 @@ export function AppShell({ children }: Readonly<{ children: React.ReactNode }>) 
           </button>
           <button className="icon-btn mobile-close" onClick={() => setMobileOpen(false)} aria-label="Close menu"><X size={17} /></button>
         </div>
-        <div className="nav-label">Workspace</div>
+        {profileError && !collapsed && <button className="sidebar-profile-error" type="button" onClick={() => window.location.reload()}>Profile unavailable · Retry</button>}
         <nav className="main-nav" aria-label="Main navigation">
-          {nav.map(({ href, label, icon: Icon }) => (
-            <Link key={href} href={href} onClick={() => setMobileOpen(false)} className={`nav-item ${active(href) ? "active" : ""}`}>
-              <Icon size={17} strokeWidth={1.8} /><span>{label}</span>
-              {label === "Messages" && unreadNotifications > 0 && (
-                <b aria-label={`${unreadNotifications} unread messages`}>{unreadNotifications > 99 ? "99+" : unreadNotifications}</b>
-              )}
-            </Link>
-          ))}
+          {["Workspace", "Clinical", "Hospital"].map((group) => {
+            const items = nav.filter((item) => ("group" in item ? item.group === group : group === "Hospital"));
+            if (!items.length) return null;
+            return <div className="nav-group" key={group}><div className="nav-label">{group}</div>{items.map(({ href, label, icon: Icon }) => (
+              <Link key={href} href={href} onClick={() => setMobileOpen(false)} className={`nav-item ${active(href) ? "active" : ""}`}>
+                <Icon size={17} strokeWidth={1.8} /><span>{label}</span>
+                {label === "Messages" && unreadNotifications > 0 && <b aria-label={`${unreadNotifications} unread messages`}>{unreadNotifications > 99 ? "99+" : unreadNotifications}</b>}
+              </Link>
+            ))}</div>;
+          })}
         </nav>
         <div className="sidebar-bottom">
           <Link href="/dashboard/help" className="nav-item"><CircleHelp size={17} /><span>Help center</span></Link>
