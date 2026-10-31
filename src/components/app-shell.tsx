@@ -4,7 +4,8 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   Bell, CalendarDays, ChevronDown, CircleHelp, FileText, LayoutDashboard, LogOut,
-  Menu, MessageCircle, Search, Settings, Stethoscope, Users, X,
+  Menu, MessageCircle, Search, Settings, Stethoscope, Users, X, ClipboardList,
+  FlaskConical, Pill, PanelLeftClose, PanelLeftOpen,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { getFirebaseClient } from "@/lib/firebase/client";
@@ -22,6 +23,9 @@ const doctorNav = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
   { href: "/dashboard/appointments", label: "My schedule", icon: CalendarDays },
   { href: "/dashboard/patients", label: "My patients", icon: Users },
+  { href: "/dashboard/clinical-records", label: "Clinical records", icon: ClipboardList },
+  { href: "/dashboard/prescriptions", label: "Prescriptions", icon: Pill },
+  { href: "/dashboard/laboratory-results", label: "Laboratory results", icon: FlaskConical },
   { href: "/dashboard/messages", label: "Messages", icon: MessageCircle },
   { href: "/dashboard/documents", label: "Documents", icon: FileText },
 ];
@@ -44,6 +48,7 @@ export function AppShell({ children }: Readonly<{ children: React.ReactNode }>) 
   const [globalSearch, setGlobalSearch] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
   const [syncOpen, setSyncOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
   const roleName = profileRole.toLowerCase().replaceAll("_", " ");
   const nav = roleName.includes("patient")
     ? patientNav
@@ -135,13 +140,16 @@ export function AppShell({ children }: Readonly<{ children: React.ReactNode }>) 
   }
 
   return (
-    <div className="app-frame">
+    <div className={`app-frame ${collapsed ? "sidebar-collapsed" : ""}`}>
       <aside className={`sidebar ${mobileOpen ? "sidebar-open" : ""}`}>
         <div className="brand-row">
           <Link href="/dashboard" className="brand" aria-label="Careflow home">
             <span className="brand-mark"><span /></span>
             <span>Careflow</span>
           </Link>
+          <button className="icon-btn desktop-collapse" type="button" onClick={() => setCollapsed((value) => !value)} aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}>
+            {collapsed ? <PanelLeftOpen size={16} /> : <PanelLeftClose size={16} />}
+          </button>
           <button className="icon-btn mobile-close" onClick={() => setMobileOpen(false)} aria-label="Close menu"><X size={17} /></button>
         </div>
         <div className="nav-label">Workspace</div>

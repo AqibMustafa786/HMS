@@ -1,64 +1,108 @@
 "use client";
 
-import { Activity, CalendarClock, ChevronRight, Clock3, ShieldCheck, Users } from "lucide-react";
+import { CalendarDays, ChevronRight, ClipboardCheck, FlaskConical, Users } from "lucide-react";
 import Link from "next/link";
-import { patients } from "@/components/data";
 import { AppointmentDialog } from "@/components/appointment-dialog";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+
+type Appointment = { appointmentId: string; patientId: string; startsAt: string | null; reason: string; state: string };
+type Patient = { id: string; givenName: string; familyName: string; lifecycleState: string };
 
 export default function DashboardPage() {
-  const [scheduleTab, setScheduleTab] = useState("All visits");
   const [role, setRole] = useState("");
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [patients, setPatients] = useState<Patient[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [now, setNow] = useState(0);
 
   useEffect(() => {
-    fetch("/api/profile").then(async (response) => {
-      const data = await response.json().catch(() => null) as { profile?: { role?: string } } | null;
-      setRole(data?.profile?.role ?? "");
-    }).catch(() => undefined);
+    const clock = window.setTimeout(() => setNow(Date.now()), 0);
+    Promise.all([fetch("/api/profile"), fetch("/api/appointments"), fetch("/api/patients")])
+      .then(async ([profileResponse, appointmentsResponse, patientsResponse]) => {
+        const profileData = await profileResponse.json().catch(() => null) as { profile?: { role?: string } } | null;
+        const appointmentData = await appointmentsResponse.json().catch(() => null) as { appointments?: Appointment[] } | null;
+        const patientData = await patientsResponse.json().catch(() => null) as { patients?: Patient[] } | null;
+        setRole(profileData?.profile?.role ?? "");
+        setAppointments(appointmentData?.appointments ?? []);
+        setPatients(patientData?.patients ?? []);
+      })
+      .finally(() => setLoading(false));
+    return () => window.clearTimeout(clock);
   }, []);
 
   const isDoctor = role === "doctor";
   const isPatient = role === "patient";
-  const portal = isDoctor ? "Doctor workspace" : isPatient ? "Patient portal" : "Clinic overview";
-  const heading = isDoctor ? "My clinical workspace" : isPatient ? "My care overview" : "Good morning";
-  const description = isDoctor
-    ? "Manage your assigned patients, schedule, and care conversations."
-    : isPatient
-      ? "View your appointments, doctors, documents, and care conversations."
-      : "Here is what is happening in your clinic today.";
+  const today = new Date().toDateString();
+  const todaysAppointments = useMemo(() => appointments.filter((appointment) =>
+    appointment.startsAt && new Date(appointment.startsAt).toDateString() === today
+  ).sort((a, b) => new Date(a.startsAt ?? 0).getTime() - new Date(b.startsAt ?? 0).getTime()), [appointments, today]);
+  const upcomingAppointments = useMemo(() => appointments.filter((appointment) =>
+    appointment.startsAt && new Date(appointment.startsAt).getTime() > now
+  ).sort((a, b) => new Date(a.startsAt ?? 0).getTime() - new Date(b.startsAt ?? 0).getTime()).slice(0, 4), [appointments, now]);
+  const completedAppointments = appointments.filter((appointment) => appointment.state === "completed").length;
+
   return (
     <>
-      <div className="page-heading">
-        <div><p className="eyebrow">{portal}</p><h1>{heading}</h1><p className="subtle">{description}</p></div>
-        <div className="heading-actions"><a className="btn btn-secondary" href="/dashboard/appointments">{isPatient ? "My appointments" : "View schedule"}</a>{!isPatient && <AppointmentDialog />}</div>
+      <div className="page-heading clinical-page-heading">
+        <div>
+          <p className="eyebrow">{isDoctor ? "Doctor workspace" : isPatient ? "Patient portal" : "Clinic overview"}</p>
+          <h1>{isDoctor ? "Clinical overview" : isPatient ? "My care overview" : "Good morning"}</h1>
+          <p className="subtle">{isDoctor ? "A concise summary of your clinical activity and patient care." : isPatient ? "View your appointments, doctors, documents, and care conversations." : "Here is what is happening in your clinic today."}</p>
+        </div>
+        <div className="heading-actions">
+          <Link className="btn btn-secondary" href="/dashboard/appointments">{isPatient ? "My appointments" : "View schedule"}</Link>
+          {!isPatient && <AppointmentDialog />}
+        </div>
       </div>
-      <section className="command-strip" aria-label="Daily overview">
-        <div><span className="command-icon"><Activity size={16} /></span><div><small>Appointments today</small><strong>0</strong><span>No visits scheduled</span></div></div>
-        <div><span className="command-icon violet"><Users size={16} /></span><div><small>Patients</small><strong>0</strong><span>No assigned records</span></div></div>
-        <div><span className="command-icon amber"><Clock3 size={16} /></span><div><small>Average wait</small><strong>--</strong><span>No completed visits</span></div></div>
-        <div><span className="command-icon blue"><ShieldCheck size={16} /></span><div><small>System status</small><strong className="status-text">Operational</strong><span>All services available</span></div></div>
-      </section>
-      <section className="dashboard-grid">
-        <article className="panel schedule-panel">
-          <div className="panel-head"><div><h2>Today&apos;s schedule</h2><p>0 appointments</p></div><Link href="/dashboard/appointments" className="link-btn">View all <ChevronRight size={14} /></Link></div>
-          <div className="schedule-tabs">{["All visits", "Checked in", "Completed"].map((tab) => <button key={tab} type="button" className={scheduleTab === tab ? "selected" : ""} onClick={() => setScheduleTab(tab)}>{tab}<span>0</span></button>)}</div>
-          <div className="schedule-empty">
-            <span className="schedule-empty-icon"><CalendarClock size={19} /></span>
-            <div><strong>No visits scheduled today</strong><small>Appointments and clinical queue activity will appear here.</small></div>
-            <AppointmentDialog label="Create appointment" />
-          </div>
-        </article>
-        <aside className="panel activity-panel">
-          <div className="panel-head"><div><h2>Recent patients</h2><p>Latest visits</p></div><Link href="/dashboard/patients" className="link-btn">See all</Link></div>
-          <div className="patient-mini-list">{patients.slice(0,4).map((patient) => <Link href={`/dashboard/patients/${patient.id}`} className="patient-mini" key={patient.id}><span className={`avatar ${patient.color}`}>{patient.initials}</span><span><strong>{patient.name}</strong><small>{patient.id} · {patient.lastVisit}</small></span><ChevronRight size={15} /></Link>)}</div>
-          {patients.length === 0 && <div className="recent-patient-empty"><Users size={17} /><span><strong>Patient activity is empty</strong><small>Recent visits will appear here.</small></span></div>}
-          <div className="availability-summary">
-            <div className="availability-ring"><span>0</span><small>seats</small></div>
-            <div><small>Next opening</small><strong>Not configured</strong><span>Availability is empty</span></div>
-            <Link href="/dashboard/appointments" className="link-btn">Manage <ChevronRight size={12} /></Link>
-          </div>
-        </aside>
-      </section>
+
+      {isDoctor ? (
+        <>
+          <section className="clinical-metrics" aria-label="Clinical overview">
+            <div><span className="metric-icon teal"><CalendarDays size={18} /></span><div><small>Today&apos;s appointments</small><strong>{loading ? "—" : todaysAppointments.length}</strong><span>{todaysAppointments.length ? "On today&apos;s schedule" : "No appointments today"}</span></div></div>
+            <div><span className="metric-icon blue"><Users size={18} /></span><div><small>Assigned patients</small><strong>{loading ? "—" : patients.length}</strong><span>Accessible patient records</span></div></div>
+            <div><span className="metric-icon green"><ClipboardCheck size={18} /></span><div><small>Completed consultations</small><strong>{loading ? "—" : completedAppointments}</strong><span>Recorded visits</span></div></div>
+            <div><span className="metric-icon amber"><FlaskConical size={18} /></span><div><small>Pending reviews</small><strong>—</strong><span>Review data not configured</span></div></div>
+          </section>
+          <section className="clinical-workspace">
+            <article className="panel schedule-panel">
+              <div className="panel-head"><div><h2>Today&apos;s schedule</h2><p>{new Date().toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" })}</p></div><Link href="/dashboard/appointments" className="link-btn">Open schedule <ChevronRight size={14} /></Link></div>
+              {loading ? <div className="clinical-loading">Loading schedule…</div> : todaysAppointments.length === 0 ? (
+                <div className="clinical-empty"><span><CalendarDays size={20} /></span><div><strong>No appointments scheduled today</strong><small>Your confirmed visits will appear in chronological order.</small></div><AppointmentDialog label="New appointment" /></div>
+              ) : (
+                <div className="appointment-timeline">{todaysAppointments.map((appointment) => (
+                  <div className="timeline-row" key={appointment.appointmentId}>
+                    <time>{appointment.startsAt ? new Date(appointment.startsAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "—"}</time>
+                    <span className="timeline-marker" />
+                    <div><strong>{appointment.patientId}</strong><small>{appointment.reason}</small></div>
+                    <span className={`workflow-status status-${appointment.state}`}>{appointment.state.replaceAll("-", " ")}</span>
+                    <Link href={`/dashboard/patients/${appointment.patientId}`} className="btn btn-secondary btn-small">Open patient</Link>
+                  </div>
+                ))}</div>
+              )}
+            </article>
+            <aside className="panel clinical-side-panel">
+              <div className="panel-head"><div><h2>Recent patients</h2><p>Authorized records</p></div><Link href="/dashboard/patients" className="link-btn">View all</Link></div>
+              {loading ? <div className="clinical-loading">Loading patients…</div> : patients.length === 0 ? (
+                <div className="compact-empty"><Users size={18} /><strong>No assigned patients</strong><small>Authorized patients will appear here.</small></div>
+              ) : (
+                <div className="recent-patient-list">{patients.slice(0, 5).map((patient) => {
+                  const name = `${patient.givenName} ${patient.familyName}`.trim();
+                  const initials = name.split(/\s+/).slice(0, 2).map((part) => part[0]?.toUpperCase()).join("");
+                  return <Link href={`/dashboard/patients/${patient.id}`} className="recent-patient-row" key={patient.id}><span className="avatar avatar-doctor">{initials}</span><span><strong>{name}</strong><small>{patient.id}</small></span><span className="patient-state">{patient.lifecycleState}</span></Link>;
+                })}</div>
+              )}
+            </aside>
+            <article className="panel upcoming-panel">
+              <div className="panel-head"><div><h2>Upcoming</h2><p>Next appointments</p></div><Link href="/dashboard/appointments" className="link-btn">View schedule</Link></div>
+              {upcomingAppointments.length === 0 ? <div className="compact-empty"><CalendarDays size={18} /><strong>No upcoming appointments</strong><small>New visits will appear here.</small></div> : upcomingAppointments.map((appointment) => (
+                <div className="upcoming-row" key={appointment.appointmentId}><time>{appointment.startsAt ? new Date(appointment.startsAt).toLocaleString([], { weekday: "short", hour: "2-digit", minute: "2-digit" }) : "—"}</time><div><strong>{appointment.patientId}</strong><small>{appointment.reason}</small></div></div>
+              ))}
+            </article>
+          </section>
+        </>
+      ) : (
+        <section className="clinical-workspace"><article className="panel schedule-panel"><div className="panel-head"><div><h2>Workspace</h2><p>Role-specific overview</p></div></div><div className="compact-empty"><strong>Loading workspace</strong><small>If this remains visible, refresh the page to load your role profile.</small></div></article></section>
+      )}
     </>
   );
 }
